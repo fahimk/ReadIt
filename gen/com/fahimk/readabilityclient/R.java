@@ -15,15 +15,17 @@ public final class R {
     }
     public static final class id {
         public static final int button_add=0x7f050005;
+        public static final int button_delete=0x7f050006;
         public static final int button_exit=0x7f050007;
-        public static final int button_help=0x7f050006;
         public static final int button_login=0x7f050002;
         public static final int button_read=0x7f050003;
         public static final int button_sync=0x7f050004;
-        public static final int list_bookmarks=0x7f050008;
+        public static final int list_arch=0x7f05000a;
+        public static final int list_fav=0x7f050009;
+        public static final int list_read=0x7f050008;
         public static final int textview_password=0x7f050001;
         public static final int textview_username=0x7f050000;
-        public static final int webView=0x7f050009;
+        public static final int webView=0x7f05000b;
     }
     public static final class layout {
         public static final int login=0x7f030000;

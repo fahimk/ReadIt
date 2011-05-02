@@ -24,14 +24,12 @@ import static com.fahimk.readabilityclient.HelperMethods.getStream;
 import static com.fahimk.readabilityclient.HelperMethods.requestApiUrl;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -81,9 +79,16 @@ public class MainMenu extends Activity {
 		Button readButton = (Button) findViewById(R.id.button_read);
 		Button syncButton = (Button) findViewById(R.id.button_sync);
 		Button addButton = (Button) findViewById(R.id.button_add);
-		Button helpButton = (Button) findViewById(R.id.button_help);
+		Button deleteButton = (Button) findViewById(R.id.button_delete);
 		Button exitButton = (Button) findViewById(R.id.button_exit);
 
+		deleteButton.setOnClickListener(new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				database.delete(ARTICLE_TABLE, null, null);
+			}
+		});
+		
 		readButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
@@ -179,16 +184,18 @@ public class MainMenu extends Activity {
 					Reader articleReader = new InputStreamReader(articlesSource);
 					SearchArticle articleResponse = articleGson.fromJson(articleReader, SearchArticle.class);
 					values.put(ARTICLE_AUTHOR, articleResponse.author);
-					try {
-						String c = getContent("https://readability.com/mobile/articles/"+articleResponse.id);
-						c = c.replaceAll("\"/", "\"https://www.readability.com/");
-						c = c.replaceAll("<a href=\"#\" class=\"article-back-link\">", "<a href=\"##\" class=\"article-back-link\">");
-						Log.e("html", c);
-						values.put(ARTICLE_CONTENT, c);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+//					try {
+//						String c = getContent("https://readability.com/mobile/articles/"+articleResponse.id);
+//						//c = c.replaceAll("\"/", "\"file:///android_asset/");
+//						c = c.replaceAll("\"/", "\"https://readability.com/");
+//						c = c.replaceAll("<a href=\"#\" class=\"article-back-link\">", "<a href=\"##\" class=\"article-back-link\">");
+//						Log.e("html", c);
+//						values.put(ARTICLE_CONTENT, c);
+//					} catch (Exception e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+					values.put(ARTICLE_CONTENT, articleResponse.content);
 					values.put(ARTICLE_CONTENT_SIZE, articleResponse.content_size); 
 					values.put(ARTICLE_SHORT_URL, articleResponse.short_url);
 
@@ -203,24 +210,6 @@ public class MainMenu extends Activity {
 			return null;
 		}
 
-		protected String getContent(String s) throws Exception {
-			HttpClient client = new DefaultHttpClient();
-			HttpGet request = new HttpGet(s);
-			HttpResponse response = client.execute(request);
-
-			String html = "";
-			InputStream in = response.getEntity().getContent();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-			StringBuilder str = new StringBuilder();
-			String line = null;
-			while((line = reader.readLine()) != null)
-			{
-				str.append(line);
-			}
-			in.close();
-			html = str.toString();
-			return html;
-		}
 
 		protected void onPostExecute(Void unused) {
 			Dialog.dismiss();
