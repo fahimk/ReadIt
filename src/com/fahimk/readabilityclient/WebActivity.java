@@ -16,6 +16,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.Window;
+import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -26,7 +28,14 @@ public class WebActivity extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		this.getWindow().requestFeature(Window.FEATURE_PROGRESS);
 		setContentView(R.layout.web);
+		 
+		// Makes Progress bar Visible
+		getWindow().setFeatureInt( Window.FEATURE_PROGRESS, Window.PROGRESS_VISIBILITY_ON);
+		
+		
 		if (savedInstanceState != null)
 			((WebView)findViewById(R.id.webView)).restoreState(savedInstanceState);
 		Bundle data = getIntent().getExtras();
@@ -50,6 +59,19 @@ public class WebActivity extends Activity {
 		webView.getSettings().setJavaScriptEnabled(true);
 		webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
 		webView.setWebViewClient(new CustomWebView());
+		final Activity MyActivity = this;
+		webView.setWebChromeClient(new WebChromeClient() {
+		 public void onProgressChanged(WebView view, int progress)   
+		 {
+		  //Make the bar disappear after URL is loaded, and changes string to Loading...
+		  MyActivity.setTitle("Loading...");
+		  MyActivity.setProgress(progress * 100); //Make the bar disappear after URL is loaded
+		 
+		  // Return the app name after finish loading
+		     if(progress == 100)
+		        MyActivity.setTitle(R.string.app_name);
+		   }
+		 });
 		//webView.loadDataWithBaseURL("...", content, "text/html", "UTF-8", "");  
 		webView.loadUrl(mobileURL + id);
 		//myWebView.loadUrl("javascript:(%28function%28%29%7Bwindow.baseUrl%3D%27https%3A//www.readability.com%27%3Bwindow.readabilityToken%3D%27LZPUBv9XN3GWbSMsxFSXnQFjsH7d6LS2BQaH26ZF%27%3Bvar%20s%3Ddocument.createElement%28%27script%27%29%3Bs.setAttribute%28%27type%27%2C%27text/javascript%27%29%3Bs.setAttribute%28%27charset%27%2C%27UTF-8%27%29%3Bs.setAttribute%28%27src%27%2CbaseUrl%2B%27/bookmarklet/save.js%27%29%3Bdocument.documentElement.appendChild%28s%29%3B%7D%29%28%29)");
