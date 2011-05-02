@@ -16,12 +16,13 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 public class WebActivity extends Activity {
 	private WebView webView;
-
+	private static String mobileURL = "https://www.readability.com/mobile/articles/";
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -45,19 +46,20 @@ public class WebActivity extends Activity {
 		//		}
 
 		webView = (WebView)this.findViewById(R.id.webView);
+		webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 		webView.getSettings().setJavaScriptEnabled(true);
 		webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
 		webView.setWebViewClient(new CustomWebView());
 		//webView.loadDataWithBaseURL("...", content, "text/html", "UTF-8", "");  
-		webView.loadUrl("https://www.readability.com/articles/" + id);
+		webView.loadUrl(mobileURL + id);
 		//myWebView.loadUrl("javascript:(%28function%28%29%7Bwindow.baseUrl%3D%27https%3A//www.readability.com%27%3Bwindow.readabilityToken%3D%27LZPUBv9XN3GWbSMsxFSXnQFjsH7d6LS2BQaH26ZF%27%3Bvar%20s%3Ddocument.createElement%28%27script%27%29%3Bs.setAttribute%28%27type%27%2C%27text/javascript%27%29%3Bs.setAttribute%28%27charset%27%2C%27UTF-8%27%29%3Bs.setAttribute%28%27src%27%2CbaseUrl%2B%27/bookmarklet/save.js%27%29%3Bdocument.documentElement.appendChild%28s%29%3B%7D%29%28%29)");
 		webView.setOnTouchListener(new View.OnTouchListener() {
 
 			public boolean onTouch(View v, MotionEvent event) {
 				WebView.HitTestResult hr = ((WebView)v).getHitTestResult();
-				if (hr != null && "##".equals(hr.getExtra()))
+				if (hr != null && (mobileURL + "%23%23").equals(hr.getExtra()))
 					WebActivity.this.finish();
-				//Log.e("test", "getExtra = "+ hr.getExtra() + "\t\t Type=" + hr.getType());
+				Log.e("test", "getExtra = "+ hr.getExtra() + "\t\t Type=" + hr.getType());
 				webView.requestFocus(View.FOCUS_DOWN);
 				return false;
 
@@ -110,8 +112,9 @@ public class WebActivity extends Activity {
 //					"$(\".article-back-link\").attr(\"href\", \"##\")" +  
 //			"})()");
 			view.loadUrl("javascript:(function() { " +  
-					"$(\".article-back-link\").attr(\"href\", \"##\")" +  
+					"$(\"a[class='article-back-link']\").attr(\"href\", \"%23%23\")" +  
 			"})()");  
+			super.onPageFinished(view, url);
 		} 
 
 	}
