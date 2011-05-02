@@ -59,6 +59,7 @@ public class WebActivity extends Activity {
 		webView.getSettings().setJavaScriptEnabled(true);
 		webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
 		webView.setWebViewClient(new CustomWebView());
+		
 		final Activity MyActivity = this;
 		webView.setWebChromeClient(new WebChromeClient() {
 		 public void onProgressChanged(WebView view, int progress)   
@@ -79,7 +80,7 @@ public class WebActivity extends Activity {
 
 			public boolean onTouch(View v, MotionEvent event) {
 				WebView.HitTestResult hr = ((WebView)v).getHitTestResult();
-				if (hr != null && (mobileURL + "%23%23").equals(hr.getExtra()))
+				if (hr != null && (mobileURL + "backButton#").equals(hr.getExtra()))
 					WebActivity.this.finish();
 				Log.e("test", "getExtra = "+ hr.getExtra() + "\t\t Type=" + hr.getType());
 				webView.requestFocus(View.FOCUS_DOWN);
@@ -128,13 +129,19 @@ public class WebActivity extends Activity {
 			}
 		}
 
+		
 		@Override
 		public void onPageFinished(WebView view, String url){
 //			view.loadUrl("javascript:(function() { " +  
 //					"$(\".article-back-link\").attr(\"href\", \"##\")" +  
 //			"})()");
 			view.loadUrl("javascript:(function() { " +  
-					"$(\"a[class='article-back-link']\").attr(\"href\", \"%23%23\")" +  
+					"$(\"a[class='article-back-link']\").attr(\"href\", \"backButton#\");" +
+					"var images = document.getElementsByTagName('img'); var l = images.length; for (var i = 0; i < l; i++) {images[0].parentNode.removeChild(images[0])}" +
+					"var readBar = document.getElementById('read-bar'); readBar.parentNode.removeChild(readBar);"+
+					"var footNote = document.getElementById('article-marketing'); footNote.parentNode.removeChild(footNote);"+
+					"var hLink=document.getElementsByTagName(\"a\"); for (i=0;i<hLink.length;i++){ if(!hLink[i].href){ hLink[i].href = '#'; }}" +
+					"$('a:not([href*=\"#\"])').contents().unwrap();"+
 			"})()");  
 			super.onPageFinished(view, url);
 		} 
