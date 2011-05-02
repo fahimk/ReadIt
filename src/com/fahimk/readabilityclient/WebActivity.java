@@ -99,9 +99,10 @@ public class WebActivity extends Activity {
 		nextTheme.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
-				webView.loadUrl("javascript:(function() { " +  
+				webView.loadUrl("javascript:(function() { " +
 						"var originalClass = $('article').attr('class');" +
-						"$('article').attr('class', originalClass.replace(/mobile-style-[a-z]*/, 'mobile-style-inverse'));" +
+						//"$('article').attr('class', originalClass.replace(/mobile-style-[a-z]*/, 'mobile-style-inverse'));" +
+						"$('img').hide();" +
 				"})()");
 				//originalClass.replace('mobile-style-\\w*', 'mobile-style-inverse');
 				// originalClass.replace(/mobile-style-[a-z]*/, 'mobile-style-inverse')
@@ -139,9 +140,10 @@ public class WebActivity extends Activity {
 			//					"$(\".article-back-link\").attr(\"href\", \"##\")" +  
 			//			"})()");
 			view.loadUrl("javascript:(function() { " +  
-					"$(\"a[class='article-back-link']\").attr(\"href\", \"backButton#\");" +
+					//"$(\"a[class='article-back-link']\").attr(\"href\", \"backButton#\");" +
 					//"var images = document.getElementsByTagName('img'); var l = images.length; for (var i = 0; i < l; i++) {images[0].parentNode.removeChild(images[0])}" +
 					"var readBar = document.getElementById('read-bar'); readBar.parentNode.removeChild(readBar);"+
+					
 					"var footNote = document.getElementById('article-marketing'); footNote.parentNode.removeChild(footNote);"+
 					//"var hLink=document.getElementsByTagName(\"a\"); for (i=0;i<hLink.length;i++){ if(!hLink[i].href){ hLink[i].href = '#'; }}" +
 					//"$('a:not([href*=\"#\"])').contents().unwrap();"+

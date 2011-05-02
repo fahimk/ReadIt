@@ -188,8 +188,9 @@ public class MainMenu extends Activity {
 						String c = getContent("https://readability.com/mobile/articles/"+articleResponse.id);
 						//c = c.replaceAll("\"/", "\"file:///android_asset/");
 						//c = c.replaceAll("\"/", "\"https://readability.com/");
-						c = c.replaceAll("/media/css/mobile.css", "file:///android_asset/media/css/mobile.css");
-						c = c.replaceAll("<a href=\"#\" class=\"article-back-link\">", "<a href=\"##\" class=\"article-back-link\">");
+						c = c.replaceAll("/media/css/mobile.css", "file:///android_asset/mobile.css");
+						c = c.replaceAll("/media/js/jquery.min.js", "file:///android_asset/jquery.min.js");
+						//c = c.replaceAll("<a href=\"#\" class=\"article-back-link\">", "<a href=\"##\" class=\"article-back-link\">");
 						//Log.e("html", c);
 						values.put(ARTICLE_CONTENT, c);
 					} catch (Exception e) {
