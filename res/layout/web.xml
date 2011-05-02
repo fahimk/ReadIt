@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent">
-  <WebView android:id="@+id/webView" android:layout_width="fill_parent"
+    <Button android:id="@+id/nextStyle" android:layout_width="fill_parent"
+  android:layout_height="wrap_content" android:layout_alignParentTop="true" android:text=">>" />
+    <WebView android:id="@+id/webView" android:layout_below="@id/nextStyle" android:layout_width="fill_parent"
   android:layout_height="fill_parent" />
-</LinearLayout>
+</RelativeLayout>

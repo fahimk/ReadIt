@@ -156,7 +156,7 @@ public class ReadingList extends TabActivity {
 		List<String> articleTitles = new ArrayList<String>();
 		Cursor articlesCursor = database.query(
 				ARTICLE_TABLE,
-				new String[] {ARTICLE_TITLE, ARTICLE_ID},
+				new String[] {ARTICLE_TITLE, ARTICLE_CONTENT},
 				filter, null, null, null, DATE_ADDED + " DESC");
 		articlesCursor.moveToFirst();
 		if(!articlesCursor.isAfterLast()) {

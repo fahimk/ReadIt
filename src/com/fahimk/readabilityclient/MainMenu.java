@@ -184,18 +184,19 @@ public class MainMenu extends Activity {
 					Reader articleReader = new InputStreamReader(articlesSource);
 					SearchArticle articleResponse = articleGson.fromJson(articleReader, SearchArticle.class);
 					values.put(ARTICLE_AUTHOR, articleResponse.author);
-//					try {
-//						String c = getContent("https://readability.com/mobile/articles/"+articleResponse.id);
-//						//c = c.replaceAll("\"/", "\"file:///android_asset/");
-//						c = c.replaceAll("\"/", "\"https://readability.com/");
-//						c = c.replaceAll("<a href=\"#\" class=\"article-back-link\">", "<a href=\"##\" class=\"article-back-link\">");
-//						Log.e("html", c);
-//						values.put(ARTICLE_CONTENT, c);
-//					} catch (Exception e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
-					values.put(ARTICLE_CONTENT, articleResponse.content);
+					try {
+						String c = getContent("https://readability.com/mobile/articles/"+articleResponse.id);
+						//c = c.replaceAll("\"/", "\"file:///android_asset/");
+						//c = c.replaceAll("\"/", "\"https://readability.com/");
+						c = c.replaceAll("/media/css/mobile.css", "file:///android_asset/media/css/mobile.css");
+						c = c.replaceAll("<a href=\"#\" class=\"article-back-link\">", "<a href=\"##\" class=\"article-back-link\">");
+						//Log.e("html", c);
+						values.put(ARTICLE_CONTENT, c);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					//values.put(ARTICLE_CONTENT, articleResponse.content);
 					values.put(ARTICLE_CONTENT_SIZE, articleResponse.content_size); 
 					values.put(ARTICLE_SHORT_URL, articleResponse.short_url);
 
@@ -210,6 +211,24 @@ public class MainMenu extends Activity {
 			return null;
 		}
 
+		protected String getContent(String s) throws Exception {
+			HttpClient client = new DefaultHttpClient();
+			HttpGet request = new HttpGet(s);
+			HttpResponse response = client.execute(request);
+
+			String html = "";
+			InputStream in = response.getEntity().getContent();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+			StringBuilder str = new StringBuilder();
+			String line = null;
+			while((line = reader.readLine()) != null)
+			{
+				str.append(line);
+			}
+			in.close();
+			html = str.toString();
+			return html;
+		}
 
 		protected void onPostExecute(Void unused) {
 			Dialog.dismiss();
