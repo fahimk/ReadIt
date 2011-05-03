@@ -4,47 +4,47 @@
 	android:layout_width="fill_parent" android:layout_height="fill_parent">
 	<WebView android:id="@+id/webView" android:layout_width="fill_parent"
 		android:layout_height="fill_parent" />
-
-	<LinearLayout android:orientation="vertical"
-		android:gravity="top|right" android:layout_width="fill_parent"
-		android:layout_height="fill_parent">
-		<com.fahimk.readabilityclient.EditPanel
-			android:id="@+id/popup_window" android:orientation="vertical"
-			android:layout_width="fill_parent" android:layout_height="wrap_content"
-			android:gravity="top">
-			<TableLayout android:layout_width="fill_parent"
-				android:layout_height="wrap_content">
-				<TableRow android:layout_width="wrap_content"
-					android:layout_height="wrap_content">
-					<Button android:id="@+id/button_edit_toggleimages"
-						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:text="Toggle Image Display" />
-				</TableRow>
-				<TableRow android:layout_width="wrap_content"
-					android:layout_height="wrap_content">
-					<Button android:id="@+id/button_edit_prevtheme"
-						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:text="&lt;&lt;" />
-					<TextView android:id="@+id/text_edit_currenttheme"
-						android:text="Newspaper" android:layout_width="wrap_content"
-						android:layout_height="wrap_content" />
-					<Button android:id="@+id/button_edit_nexttheme"
-						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:text="&gt;&gt;" />
-				</TableRow>
-				<TableRow android:layout_width="wrap_content"
-					android:layout_height="wrap_content">
-					<Button android:id="@+id/button_edit_prevsize"
-						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:text="A" />
-					<Button android:id="@+id/button_edit_nextsize"
-						android:layout_width="wrap_content" android:layout_height="wrap_content"
-						android:text="AA" />
-				</TableRow>
-			</TableLayout>
-		</com.fahimk.readabilityclient.EditPanel>
-		<Button android:id="@+id/show_popup_button"
-			android:layout_width="wrap_content" android:layout_height="wrap_content"
-			android:background="@drawable/icon" />
-	</LinearLayout>
+	<com.fahimk.readabilityclient.EditPanel
+		android:id="@+id/popup_window" android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:gravity="top">
+		<TableRow>
+			<Button android:id="@+id/button_edit_prevsize"
+				android:layout_weight="1" android:layout_width="0dip"
+				android:layout_height="wrap_content" android:text="A" />
+			<Button android:id="@+id/button_edit_nextsize"
+				android:layout_weight="1" android:layout_width="0dip"
+				android:layout_height="wrap_content" android:text="AA" />
+			<Button
+				android:layout_weight="1" android:layout_width="0dip"
+				android:layout_height="wrap_content" android:visibility="invisible" />
+			<Button android:id="@+id/button_edit_prevwidth"
+				android:layout_weight="1" android:layout_width="0dip"
+				android:layout_height="wrap_content" android:text="w" />
+			<Button android:id="@+id/button_edit_nextwidth"
+				android:layout_weight="1" android:layout_width="0dip"
+				android:layout_height="wrap_content" android:text="W" />
+		</TableRow>
+		<TableRow>
+			<Button android:id="@+id/button_edit_toggleimages"
+				android:layout_width="0dip" android:layout_weight="1"
+				android:layout_height="wrap_content" android:text="Images" />
+			<Button
+				android:layout_weight="1" android:layout_width="0dip"
+				android:layout_height="wrap_content" android:visibility="invisible" />
+			<Button android:id="@+id/button_edit_togglelinks"
+				android:layout_weight="1" android:layout_width="0dip"
+				android:layout_height="wrap_content" android:text="Links" />
+		</TableRow>
+		<TableRow android:gravity="center">
+			<Button android:id="@+id/button_edit_prevtheme"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:text="&lt;&lt;" />
+			<TextView android:id="@+id/text_edit_currenttheme"
+				android:text="Newspaper" android:gravity="center"
+				android:layout_height="wrap_content" />
+			<Button android:id="@+id/button_edit_nexttheme"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:text="&gt;&gt;" />
+		</TableRow>
+	</com.fahimk.readabilityclient.EditPanel>
 </FrameLayout>

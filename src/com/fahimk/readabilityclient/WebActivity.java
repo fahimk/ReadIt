@@ -1,24 +1,18 @@
 package com.fahimk.readabilityclient;
 
-import com.fahimk.readabilityclient.JavascriptModifyFunctions.*;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
+import static com.fahimk.readabilityclient.JavascriptModifyFunctions.addButtonListeners;
+import static com.fahimk.readabilityclient.JavascriptModifyFunctions.setupDefaultTheme;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MotionEvent;
+import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.Window;
-import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -27,6 +21,7 @@ import android.widget.Button;
 public class WebActivity extends Activity {
 	private WebView webView;
 	int key=0;
+	private ProgressDialog Dialog;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -53,49 +48,49 @@ public class WebActivity extends Activity {
 		webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
 		webView.setWebViewClient(new CustomWebView());
 
-		final Activity MyActivity = this;
-		webView.setWebChromeClient(new WebChromeClient() {
-			public void onProgressChanged(WebView view, int progress)   
-			{
-				//Make the bar disappear after URL is loaded, and changes string to Loading...
-				MyActivity.setTitle("Loading...");
-				MyActivity.setProgress(progress * 100); //Make the bar disappear after URL is loaded
-
-				// Return the app name after finish loading
-				if(progress == 100)
-					MyActivity.setTitle(R.string.app_name);
-			}
-		});
+		Dialog = new ProgressDialog(WebActivity.this);
+		Dialog.setMessage("Loading Page..");
+		Dialog.show();
+		
 		Log.e("html", id);
-		webView.loadDataWithBaseURL("...", id, "text/html", "UTF-8", "");  
+		webView.loadDataWithBaseURL("", id, "text/html", "UTF-8", "");  
 
-		JavascriptModifyFunctions a = new JavascriptModifyFunctions();
-		a.addButtonListeners(findViewById(R.id.mainFrame), webView);
+		addButtonListeners(findViewById(R.id.mainFrame), webView);
 		setupCustomPanel();
 	}
 	
 	private void setupCustomPanel() {
 		final EditPanel popup = (EditPanel) findViewById(R.id.popup_window);
 		popup.setVisibility(View.GONE);
-		final Button btn=(Button)findViewById(R.id.show_popup_button);
-		btn.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View view) {
-				if(key==0){
-					key=1;
-					popup.setVisibility(View.VISIBLE);
-					webView.setClickable(false);
-					popup.setClickable(true);
-				}
-				else if(key==1){
-					key=0;
-					popup.setVisibility(View.GONE);
-					webView.setClickable(true);
-					popup.setClickable(false);
-				}
-			}
-		});
 	}
 
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+
+	    if(event.getAction() == KeyEvent.ACTION_DOWN)
+	    {
+	        switch(keyCode)
+	        {
+	        case KeyEvent.KEYCODE_MENU:
+	    		final EditPanel popup = (EditPanel) findViewById(R.id.popup_window);
+	    		if(key==0){
+	    			key=1;
+	    			popup.setVisibility(View.VISIBLE);
+	    			webView.setClickable(false);
+	    			popup.setClickable(true);
+	    		}
+	    		else if(key==1){
+	    			key=0;
+	    			popup.setVisibility(View.GONE);
+	    			webView.setClickable(true);
+	    			popup.setClickable(false);
+	    		}
+	            return true;
+	        }
+	    }
+
+	    return super.onKeyDown(keyCode, event);
+	}
 
 
 
@@ -107,6 +102,7 @@ public class WebActivity extends Activity {
 	private class CustomWebView extends WebViewClient {
 
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
+			Log.e("url", url);
 			if (!url.startsWith("https://www.readability.com")) {  
 
 				Intent i = new Intent(Intent.ACTION_VIEW);
@@ -126,6 +122,7 @@ public class WebActivity extends Activity {
 			//			view.loadUrl("javascript:(function() { " +  
 			//					"$(\".article-back-link\").attr(\"href\", \"##\")" +  
 			//			"})()");
+			setupDefaultTheme(webView);
 			view.loadUrl("javascript:(function() { " +  
 					//"$(\"a[class='article-back-link']\").attr(\"href\", \"backButton#\");" +
 					//"var images = document.getElementsByTagName('img'); var l = images.length; for (var i = 0; i < l; i++) {images[0].parentNode.removeChild(images[0])}" +
@@ -135,6 +132,7 @@ public class WebActivity extends Activity {
 					//"var hLink=document.getElementsByTagName(\"a\"); for (i=0;i<hLink.length;i++){ if(!hLink[i].href){ hLink[i].href = '#'; }}" +
 					//"$('a:not([href*=\"#\"])').contents().unwrap();"+
 			"})()");  
+			Dialog.dismiss();
 			super.onPageFinished(view, url);
 		} 
 
