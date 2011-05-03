@@ -1,5 +1,6 @@
 package com.fahimk.readabilityclient;
 
+import com.fahimk.readabilityclient.JavascriptModifyFunctions.*;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -25,8 +26,8 @@ import android.widget.Button;
 
 public class WebActivity extends Activity {
 	private WebView webView;
-	//private static String mobileURL = "https://www.readability.com/mobile/articles/";
-	private static String mobileURL = "file:///android_asset/test.html";
+	int key=0;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -45,16 +46,6 @@ public class WebActivity extends Activity {
 		if(data != null) {
 			id = data.getString("article_id");
 		}
-		//		String content = "Error loading article.";
-		//		try {
-		//			content = getContent("https://readability.com/mobile/articles/"+id);
-		//			content = content.replaceAll("\"/", "\"https://readability.com/");
-		//			content = content.replaceAll("<a href=\"#\" class=\"article-back-link\">", "<a href=\"##\" class=\"article-back-link\">");
-		//
-		//		} catch (Exception e) {
-		//			// TODO Auto-generated catch block
-		//			e.printStackTrace();
-		//		}
 
 		webView = (WebView)this.findViewById(R.id.webView);
 		webView.getSettings().setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
@@ -77,39 +68,35 @@ public class WebActivity extends Activity {
 		});
 		Log.e("html", id);
 		webView.loadDataWithBaseURL("...", id, "text/html", "UTF-8", "");  
-		//webView.loadUrl(mobileURL);
-		//myWebView.loadUrl("javascript:(%28function%28%29%7Bwindow.baseUrl%3D%27https%3A//www.readability.com%27%3Bwindow.readabilityToken%3D%27LZPUBv9XN3GWbSMsxFSXnQFjsH7d6LS2BQaH26ZF%27%3Bvar%20s%3Ddocument.createElement%28%27script%27%29%3Bs.setAttribute%28%27type%27%2C%27text/javascript%27%29%3Bs.setAttribute%28%27charset%27%2C%27UTF-8%27%29%3Bs.setAttribute%28%27src%27%2CbaseUrl%2B%27/bookmarklet/save.js%27%29%3Bdocument.documentElement.appendChild%28s%29%3B%7D%29%28%29)");
-		webView.setOnTouchListener(new View.OnTouchListener() {
 
-			public boolean onTouch(View v, MotionEvent event) {
-				WebView.HitTestResult hr = ((WebView)v).getHitTestResult();
-				if (hr != null && (mobileURL + "backButton#").equals(hr.getExtra()))
-					WebActivity.this.finish();
-				//Log.e("test", "getExtra = "+ hr.getExtra() + "\t\t Type=" + hr.getType());
-				webView.requestFocus(View.FOCUS_DOWN);
-				return false;
-
-			}
-		});
-		addButtonListeners();
+		JavascriptModifyFunctions a = new JavascriptModifyFunctions();
+		a.addButtonListeners(findViewById(R.id.mainFrame), webView);
+		setupCustomPanel();
 	}
-
-	private void addButtonListeners() {
-		Button nextTheme = (Button) findViewById(R.id.nextStyle);
-		nextTheme.setOnClickListener(new View.OnClickListener() {
-
-			public void onClick(View v) {
-				webView.loadUrl("javascript:(function() { " +
-						"var originalClass = $('article').attr('class');" +
-						//"$('article').attr('class', originalClass.replace(/mobile-style-[a-z]*/, 'mobile-style-inverse'));" +
-						"$('img').hide();" +
-				"})()");
-				//originalClass.replace('mobile-style-\\w*', 'mobile-style-inverse');
-				// originalClass.replace(/mobile-style-[a-z]*/, 'mobile-style-inverse')
-				//article col-medium appearance_convert_links size-x-small style-ebook mobile-col-wide mobile-size-x-small mobile-style-athelas
+	
+	private void setupCustomPanel() {
+		final EditPanel popup = (EditPanel) findViewById(R.id.popup_window);
+		popup.setVisibility(View.GONE);
+		final Button btn=(Button)findViewById(R.id.show_popup_button);
+		btn.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View view) {
+				if(key==0){
+					key=1;
+					popup.setVisibility(View.VISIBLE);
+					webView.setClickable(false);
+					popup.setClickable(true);
+				}
+				else if(key==1){
+					key=0;
+					popup.setVisibility(View.GONE);
+					webView.setClickable(true);
+					popup.setClickable(false);
+				}
 			}
 		});
 	}
+
+
 
 
 
@@ -143,7 +130,7 @@ public class WebActivity extends Activity {
 					//"$(\"a[class='article-back-link']\").attr(\"href\", \"backButton#\");" +
 					//"var images = document.getElementsByTagName('img'); var l = images.length; for (var i = 0; i < l; i++) {images[0].parentNode.removeChild(images[0])}" +
 					"var readBar = document.getElementById('read-bar'); readBar.parentNode.removeChild(readBar);"+
-					
+
 					"var footNote = document.getElementById('article-marketing'); footNote.parentNode.removeChild(footNote);"+
 					//"var hLink=document.getElementsByTagName(\"a\"); for (i=0;i<hLink.length;i++){ if(!hLink[i].href){ hLink[i].href = '#'; }}" +
 					//"$('a:not([href*=\"#\"])').contents().unwrap();"+
