@@ -14,8 +14,7 @@
 			<Button android:id="@+id/button_edit_nextsize"
 				android:layout_weight="1" android:layout_width="0dip"
 				android:layout_height="wrap_content" android:text="AA" />
-			<Button
-				android:layout_weight="1" android:layout_width="0dip"
+			<Button android:layout_weight="1" android:layout_width="0dip"
 				android:layout_height="wrap_content" android:visibility="invisible" />
 			<Button android:id="@+id/button_edit_prevwidth"
 				android:layout_weight="1" android:layout_width="0dip"
@@ -28,8 +27,7 @@
 			<Button android:id="@+id/button_edit_toggleimages"
 				android:layout_width="0dip" android:layout_weight="1"
 				android:layout_height="wrap_content" android:text="Images" />
-			<Button
-				android:layout_weight="1" android:layout_width="0dip"
+			<Button android:layout_weight="1" android:layout_width="0dip"
 				android:layout_height="wrap_content" android:visibility="invisible" />
 			<Button android:id="@+id/button_edit_togglelinks"
 				android:layout_weight="1" android:layout_width="0dip"

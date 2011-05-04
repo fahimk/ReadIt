@@ -27,6 +27,8 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -86,6 +88,10 @@ public class MainMenu extends Activity {
 			
 			public void onClick(View v) {
 				database.delete(ARTICLE_TABLE, null, null);
+				SharedPreferences preferences = getBaseContext().getSharedPreferences(PREF_NAME, 0);
+				SharedPreferences.Editor editor = preferences.edit();
+				editor.putString("previous_update", "0");
+				editor.commit();
 			}
 		});
 		
@@ -125,15 +131,17 @@ public class MainMenu extends Activity {
 			oauthTokenSecret = preferences.getString("oauth_token_secret", null);
 			oauthVerifier = preferences.getString("oauth_verifier", null);
 			previousUpdate = preferences.getString("previous_update", "0");
-
+			
 			Dialog.setMessage("Downloading source..");
 			Dialog.show();
 		}
 
 		protected Void doInBackground(Void... params) {
-			String extraParams = String.format(
-					"&oauth_token=%s&oauth_token_secret=%s&oauth_verifier=%s", 
-					oauthToken, oauthTokenSecret, oauthVerifier);
+			String extraParams = "";
+				extraParams = String.format(
+						"&oauth_token=%s&oauth_token_secret=%s&oauth_verifier=%s", 
+						oauthToken, oauthTokenSecret, oauthVerifier);
+			
 			String bookmarksUrl = requestApiUrl("bookmarks", API_SECRET + oauthTokenSecret, extraParams);		
 			InputStream bookmarksSource = getStream(bookmarksUrl);
 
@@ -145,6 +153,10 @@ public class MainMenu extends Activity {
 			List<Bookmark> bookmarks = response.bookmarks;
 			String latestUpdate = "0";
 			for(Bookmark bm : bookmarks) {
+				if(bm.date_updated.compareTo(previousUpdate) < 0) {
+					continue;
+				}
+				Log.e("looking at bookmark", bm.article.title);
 				ContentValues values = new ContentValues();
 				if(bm.date_updated.compareTo(latestUpdate) > 0) {
 					latestUpdate = bm.date_updated;

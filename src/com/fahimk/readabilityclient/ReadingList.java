@@ -78,8 +78,8 @@ public class ReadingList extends TabActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
 				Intent i = new Intent(getBaseContext(), WebActivity.class);
-				Log.e("content", readArticleIds.get(position));
 				i.putExtra("article_id", readArticleIds.get(position));
+				i.putExtra("local", true);
 				startActivity(i);
 			}
 		});
@@ -90,6 +90,7 @@ public class ReadingList extends TabActivity {
 					long id) {
 				Intent i = new Intent(getBaseContext(), WebActivity.class);
 				i.putExtra("article_id", favArticleIds.get(position));
+				i.putExtra("local", true);
 				startActivity(i);
 			}
 		});
@@ -100,6 +101,7 @@ public class ReadingList extends TabActivity {
 					long id) {
 				Intent i = new Intent(getBaseContext(), WebActivity.class);
 				i.putExtra("article_id", arcArticleIds.get(position));
+				i.putExtra("local", false);
 				startActivity(i);
 			}
 		});
@@ -154,9 +156,13 @@ public class ReadingList extends TabActivity {
 	public ArrayAdapter<String> getAdapterQuery(String filter, ArrayList<String> contentList) {
 		Log.e("getAdapterQuery", "running query");
 		List<String> articleTitles = new ArrayList<String>();
+		String retrieve = ARTICLE_CONTENT;
+		if(filter.equals(ARCHIVE + "=1")) {
+			retrieve = ARTICLE_ID;
+		}
 		Cursor articlesCursor = database.query(
 				ARTICLE_TABLE,
-				new String[] {ARTICLE_TITLE, ARTICLE_CONTENT},
+				new String[] {ARTICLE_TITLE, retrieve},
 				filter, null, null, null, DATE_ADDED + " DESC");
 		articlesCursor.moveToFirst();
 		if(!articlesCursor.isAfterLast()) {
