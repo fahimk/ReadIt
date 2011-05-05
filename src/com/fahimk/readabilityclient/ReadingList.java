@@ -31,13 +31,16 @@ public class ReadingList extends TabActivity {
 
 	private TabHost tabHost;
 	
-	private ArrayList<String> favArticleIds;
+	private ArrayList<String> favArticleContent;
+	private ArrayList<Double> favArticleScroll;
 	private ListView favList;
 	
-	private ArrayList<String> readArticleIds;
+	private ArrayList<String> readArticleContent;
+	private ArrayList<Double> readArticleScroll;
 	private ListView readList;
 	
-	private ArrayList<String> arcArticleIds;
+	private ArrayList<String> arcArticleUrls;
+	private ArrayList<Double> arcArticleScroll;
 	private ListView arcList;
 	
 	@Override
@@ -65,21 +68,26 @@ public class ReadingList extends TabActivity {
 		favList = (ListView) findViewById(R.id.list_fav);
 		arcList = (ListView) findViewById(R.id.list_arch);
 
-		readArticleIds = new ArrayList<String>();
-		favArticleIds = new ArrayList<String>();
-		arcArticleIds = new ArrayList<String>();
+		readArticleContent = new ArrayList<String>();
+		favArticleContent = new ArrayList<String>();
+		arcArticleUrls = new ArrayList<String>();
 		
-		readList.setAdapter(getAdapterQuery(ARCHIVE + "=0", readArticleIds));
-		favList.setAdapter(getAdapterQuery(FAVORITE + "=1", favArticleIds));
-		arcList.setAdapter(getAdapterQuery(ARCHIVE + "=1", arcArticleIds));
+		readArticleScroll = new ArrayList<Double>();
+		favArticleScroll = new ArrayList<Double>();
+		arcArticleScroll = new ArrayList<Double>();
+		
+		readList.setAdapter(getAdapterQuery(ARCHIVE + "=0", readArticleContent, readArticleScroll));
+		favList.setAdapter(getAdapterQuery(FAVORITE + "=1", favArticleContent, favArticleScroll));
+		arcList.setAdapter(getAdapterQuery(ARCHIVE + "=1", arcArticleUrls, arcArticleScroll));
 		
 		readList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
 				Intent i = new Intent(getBaseContext(), WebActivity.class);
-				i.putExtra("article_id", readArticleIds.get(position));
+				i.putExtra("article_content", readArticleContent.get(position));
 				i.putExtra("local", true);
+				i.putExtra("scroll_position", readArticleScroll.get(position));
 				startActivity(i);
 			}
 		});
@@ -89,8 +97,9 @@ public class ReadingList extends TabActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
 				Intent i = new Intent(getBaseContext(), WebActivity.class);
-				i.putExtra("article_id", favArticleIds.get(position));
+				i.putExtra("article_content", favArticleContent.get(position));
 				i.putExtra("local", true);
+				i.putExtra("scroll_position", favArticleScroll.get(position));
 				startActivity(i);
 			}
 		});
@@ -100,8 +109,9 @@ public class ReadingList extends TabActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
 				Intent i = new Intent(getBaseContext(), WebActivity.class);
-				i.putExtra("article_id", arcArticleIds.get(position));
+				i.putExtra("article_url", arcArticleUrls.get(position));
 				i.putExtra("local", false);
+				i.putExtra("scroll_position", arcArticleScroll.get(position));
 				startActivity(i);
 			}
 		});
@@ -126,49 +136,26 @@ public class ReadingList extends TabActivity {
 		tabHost.setCurrentTab(2);
 		tabHost.setCurrentTab(1);
 		tabHost.setCurrentTab(0);
-/*		List<String> articleTitles = new ArrayList<String>();
-		final List<String> articleContent = new ArrayList<String>();
-		Cursor articlesCursor = database.query(
-				ARTICLE_TABLE,
-				new String[] {ARTICLE_TITLE, ARTICLE_CONTENT},
-				null, null, null, null, DATE_ADDED);
-		articlesCursor.moveToFirst();
-		if(!articlesCursor.isAfterLast()) {
-			do {
-				articleTitles.add(articlesCursor.getString(0));
-				articleContent.add(articlesCursor.getString(1));
-			} while (articlesCursor.moveToNext());
-		}
-		articlesCursor.close();
-		ListView a = (ListView) findViewById(R.id.list_bookmarks);
-		a.setAdapter(new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, articleTitles));
-		a.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			
-			public void onItemClick(AdapterView<?> parent, View view, int position,
-					long id) {
-				Intent i = new Intent(getBaseContext(), WebActivity.class);
-				i.putExtra("content", articleContent.get(position));
-				startActivity(i);
-			}
-		});*/
 	}
 
-	public ArrayAdapter<String> getAdapterQuery(String filter, ArrayList<String> contentList) {
+	public ArrayAdapter<String> getAdapterQuery(String filter, ArrayList<String> contentList, ArrayList<Double> scrollList) {
 		Log.e("getAdapterQuery", "running query");
 		List<String> articleTitles = new ArrayList<String>();
-		String retrieve = ARTICLE_CONTENT;
+		int content = 1;
 		if(filter.equals(ARCHIVE + "=1")) {
-			retrieve = ARTICLE_ID;
+			content = 2;
 		}
 		Cursor articlesCursor = database.query(
 				ARTICLE_TABLE,
-				new String[] {ARTICLE_TITLE, retrieve},
+				new String[] {ARTICLE_TITLE, ARTICLE_CONTENT, ARTICLE_ID, READ_PERCENT},
 				filter, null, null, null, DATE_ADDED + " DESC");
 		articlesCursor.moveToFirst();
 		if(!articlesCursor.isAfterLast()) {
 			do {
 				articleTitles.add(articlesCursor.getString(0));
-				contentList.add(articlesCursor.getString(1));
+				contentList.add(articlesCursor.getString(content));
+				scrollList.add(articlesCursor.getDouble(3));
+				
 			} while (articlesCursor.moveToNext());
 		}
 		articlesCursor.close();

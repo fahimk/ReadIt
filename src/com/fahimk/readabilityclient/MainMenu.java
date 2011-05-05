@@ -1,40 +1,21 @@
 package com.fahimk.readabilityclient;
 
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARCHIVE;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_AUTHOR;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_CONTENT;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_CONTENT_SIZE;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_DOMAIN;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_HREF;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_ID;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_SHORT_URL;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_TABLE;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_TITLE;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_URL;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.BOOKMARK_ID;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.DATE_ADDED;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.DATE_FAVORITED;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.DATE_UPDATED;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.FAVORITE;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.MY_ID;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.READ_PERCENT;
-import static com.fahimk.readabilityclient.HelperMethods.API_SECRET;
-import static com.fahimk.readabilityclient.HelperMethods.PREF_NAME;
-import static com.fahimk.readabilityclient.HelperMethods.getStream;
-import static com.fahimk.readabilityclient.HelperMethods.requestApiUrl;
+import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.*;
+import static com.fahimk.readabilityclient.HelperMethods.*;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -85,7 +66,7 @@ public class MainMenu extends Activity {
 		Button exitButton = (Button) findViewById(R.id.button_exit);
 
 		deleteButton.setOnClickListener(new View.OnClickListener() {
-			
+
 			public void onClick(View v) {
 				database.delete(ARTICLE_TABLE, null, null);
 				SharedPreferences preferences = getBaseContext().getSharedPreferences(PREF_NAME, 0);
@@ -94,7 +75,7 @@ public class MainMenu extends Activity {
 				editor.commit();
 			}
 		});
-		
+
 		readButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
@@ -118,8 +99,9 @@ public class MainMenu extends Activity {
 	}
 
 
-	private class SyncArticles extends AsyncTask<Void, Void, Void> {
-		private ProgressDialog Dialog = new ProgressDialog(MainMenu.this);
+	private class SyncArticles extends AsyncTask<Void, Integer, Boolean> {
+		ProgressDialog progressDialog;
+		ProgressDialog tempDialog;
 		String oauthToken;
 		String oauthTokenSecret;
 		String oauthVerifier;
@@ -132,34 +114,50 @@ public class MainMenu extends Activity {
 			oauthVerifier = preferences.getString("oauth_verifier", null);
 			previousUpdate = preferences.getString("previous_update", "0");
 			
-			Dialog.setMessage("Downloading source..");
-			Dialog.show();
+			tempDialog = new ProgressDialog(MainMenu.this);
+			tempDialog.setMessage("Connecting to server...");
+			tempDialog.show();
+			
+			progressDialog = new ProgressDialog(MainMenu.this);
+			progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			progressDialog.setMessage("Synchronizing Articles...");
+			progressDialog.setProgress(0);
+			progressDialog.setCancelable(false);
 		}
 
-		protected Void doInBackground(Void... params) {
+		protected Boolean doInBackground(Void... params) {
 			String extraParams = "";
-				extraParams = String.format(
-						"&oauth_token=%s&oauth_token_secret=%s&oauth_verifier=%s", 
-						oauthToken, oauthTokenSecret, oauthVerifier);
-			
-			String bookmarksUrl = requestApiUrl("bookmarks", API_SECRET + oauthTokenSecret, extraParams);		
+			extraParams = String.format(
+					"&oauth_token=%s&oauth_token_secret=%s&oauth_verifier=%s&updated_since=%s", 
+					oauthToken, oauthTokenSecret, oauthVerifier, "2011-05-04");
+
+			//			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+			//			Log.e("previousUpdate", previousUpdate);
+			//			nameValuePairs.add(new BasicNameValuePair("updated_since", previousUpdate));
+
+			String bookmarksUrl = requestApiUrl("bookmarks", API_SECRET + oauthTokenSecret, extraParams);
+			Log.e("url", bookmarksUrl);
 			InputStream bookmarksSource = getStream(bookmarksUrl);
 
-
+			if(bookmarksSource == null) {
+				Log.e("bookmarksSource", "url request was empty");
+				return false;
+			}
+			Log.e("bookmarksSource", bookmarksSource.toString());
 			Gson bookmarkGson = new Gson();
 			Reader bookmarkReader = new InputStreamReader(bookmarksSource);
 			SearchBookmarks response = bookmarkGson.fromJson(bookmarkReader, SearchBookmarks.class);
 
 			List<Bookmark> bookmarks = response.bookmarks;
 			String latestUpdate = "0";
+			Log.e("looking at bookmark", "hello");
+			int count = 0;
+			publishProgress(0, bookmarks.size());
 			for(Bookmark bm : bookmarks) {
-				if(bm.date_updated.compareTo(previousUpdate) < 0) {
-					continue;
-				}
 				Log.e("looking at bookmark", bm.article.title);
 				ContentValues values = new ContentValues();
 				if(bm.date_updated.compareTo(latestUpdate) > 0) {
-					latestUpdate = bm.date_updated;
+					latestUpdate = bm.date_updated.split(" ")[0];
 				}
 				values.put(DATE_UPDATED, bm.date_updated);
 				values.put(READ_PERCENT, bm.read_percent);	
@@ -180,7 +178,7 @@ public class MainMenu extends Activity {
 						new String[] {MY_ID},
 						whereIDSame, null, null, null, null);
 				if(articleCursor.getCount() > 0) {
-					if(bm.date_updated.compareTo(previousUpdate) > 0) {
+					if(bm.date_updated.compareTo(previousUpdate) >= 0) {
 						database.update(ARTICLE_TABLE, values, whereIDSame, null);
 						Log.e("updated", bm.article.title);
 					}
@@ -196,18 +194,13 @@ public class MainMenu extends Activity {
 					Reader articleReader = new InputStreamReader(articlesSource);
 					SearchArticle articleResponse = articleGson.fromJson(articleReader, SearchArticle.class);
 					values.put(ARTICLE_AUTHOR, articleResponse.author);
-					try {
-						String c = getContent("https://readability.com/mobile/articles/"+articleResponse.id);
-						//c = c.replaceAll("\"/", "\"file:///android_asset/");
-						//c = c.replaceAll("\"/", "\"https://readability.com/");
-						c = c.replaceAll("/media/css/mobile.css", "file:///android_asset/mobile.css");
-						c = c.replaceAll("/media/js/jquery.min.js", "file:///android_asset/jquery.min.js");
-						//c = c.replaceAll("<a href=\"#\" class=\"article-back-link\">", "<a href=\"##\" class=\"article-back-link\">");
-						//Log.e("html", c);
-						values.put(ARTICLE_CONTENT, c);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					if(!bm.archive) {
+						try {
+							String html = parseHTML("https://readability.com/mobile/articles/"+articleResponse.id);
+							values.put(ARTICLE_CONTENT, html);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 					//values.put(ARTICLE_CONTENT, articleResponse.content);
 					values.put(ARTICLE_CONTENT_SIZE, articleResponse.content_size); 
@@ -217,34 +210,26 @@ public class MainMenu extends Activity {
 					Log.e("inserted", bm.article.title );
 				}
 				articleCursor.close();
+				count++;
+				publishProgress(count, bookmarks.size());
 			}
 			SharedPreferences.Editor editor = preferences.edit();
 			editor.putString("previous_update", latestUpdate);
 			editor.commit();
-			return null;
+			return true;
 		}
 
-		protected String getContent(String s) throws Exception {
-			HttpClient client = new DefaultHttpClient();
-			HttpGet request = new HttpGet(s);
-			HttpResponse response = client.execute(request);
-
-			String html = "";
-			InputStream in = response.getEntity().getContent();
-			BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-			StringBuilder str = new StringBuilder();
-			String line = null;
-			while((line = reader.readLine()) != null)
-			{
-				str.append(line);
+		protected void onProgressUpdate(Integer... values) {
+			if(tempDialog.isShowing()) {
+				tempDialog.dismiss();
+				progressDialog.setMax(values[1]);
+				progressDialog.show();
 			}
-			in.close();
-			html = str.toString();
-			return html;
+			progressDialog.setProgress(values[0]);
 		}
-
-		protected void onPostExecute(Void unused) {
-			Dialog.dismiss();
+		
+		protected void onPostExecute(Boolean unused) {
+			progressDialog.dismiss();
 		}
 
 	}
