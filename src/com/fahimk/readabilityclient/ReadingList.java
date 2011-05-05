@@ -3,20 +3,26 @@ package com.fahimk.readabilityclient;
 import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.*;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 import android.app.TabActivity;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TabHost;
+import android.widget.TextView;
 import android.widget.TabHost.TabContentFactory;
+import android.widget.TabHost.TabSpec;
+
+import com.fahimk.jsonobjects.Article;
 
 public class ReadingList extends TabActivity {
 
@@ -31,16 +37,14 @@ public class ReadingList extends TabActivity {
 
 	private TabHost tabHost;
 	
-	private ArrayList<String> favArticleContent;
-	private ArrayList<Double> favArticleScroll;
+	private ArrayList<Article> favArticlesInfo;
 	private ListView favList;
 	
-	private ArrayList<String> readArticleContent;
-	private ArrayList<Double> readArticleScroll;
+	private ArrayList<Article> readArticlesInfo;
 	private ListView readList;
 	
-	private ArrayList<String> arcArticleUrls;
-	private ArrayList<Double> arcArticleScroll;
+
+	private ArrayList<Article> arcArticlesInfo;
 	private ListView arcList;
 	
 	@Override
@@ -48,7 +52,8 @@ public class ReadingList extends TabActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.reading_list);
 		setupDB();
-		setupViews();
+		setupLists();
+		setupTabs();
 	}
 
 	public void setupDB() {
@@ -61,33 +66,57 @@ public class ReadingList extends TabActivity {
 		database.close();
 	}
 
+	public void setupTabs() {
+		tabHost.getTabWidget().setDividerDrawable(R.drawable.tab_divider);
 
-	public void setupViews() {
+		addTab(readList, READ_TAB_TAG, tabHost);
+		addTab(favList, FAV_TAB_TAG, tabHost);
+		addTab(arcList, ARC_TAB_TAG, tabHost);
+		
+		tabHost.setCurrentTab(2);
+		tabHost.setCurrentTab(1);
+		tabHost.setCurrentTab(0);
+	}
+	
+		
+	private void addTab(final View view, final String tag, TabHost th) {
+		View tabview = createTabLabel(th.getContext(), tag);
+	        TabSpec setContent = th.newTabSpec(tag).setIndicator(tabview).setContent(new TabContentFactory() {
+			public View createTabContent(String tag) {return view;}
+		});
+		th.addTab(setContent);
+	}
+
+	private static View createTabLabel(final Context context, final String text) {
+		View view = LayoutInflater.from(context).inflate(R.layout.tabs_bg, null);
+		TextView tv = (TextView) view.findViewById(R.id.tabsText);
+		tv.setText(text);
+		return view;
+	}
+	
+	public void setupLists() {
 		tabHost = getTabHost();
 		readList = (ListView) findViewById(R.id.list_read);
 		favList = (ListView) findViewById(R.id.list_fav);
 		arcList = (ListView) findViewById(R.id.list_arch);
 
-		readArticleContent = new ArrayList<String>();
-		favArticleContent = new ArrayList<String>();
-		arcArticleUrls = new ArrayList<String>();
+		readArticlesInfo = new ArrayList<Article>();
+		favArticlesInfo = new ArrayList<Article>();
+		arcArticlesInfo = new ArrayList<Article>();
 		
-		readArticleScroll = new ArrayList<Double>();
-		favArticleScroll = new ArrayList<Double>();
-		arcArticleScroll = new ArrayList<Double>();
 		
-		readList.setAdapter(getAdapterQuery(ARCHIVE + "=0", readArticleContent, readArticleScroll));
-		favList.setAdapter(getAdapterQuery(FAVORITE + "=1", favArticleContent, favArticleScroll));
-		arcList.setAdapter(getAdapterQuery(ARCHIVE + "=1", arcArticleUrls, arcArticleScroll));
+		readList.setAdapter(getAdapterQuery(ARCHIVE + "=0", readArticlesInfo));
+		favList.setAdapter(getAdapterQuery(FAVORITE + "=1", favArticlesInfo));
+		arcList.setAdapter(getAdapterQuery(ARCHIVE + "=1", arcArticlesInfo));
 		
 		readList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
 				Intent i = new Intent(getBaseContext(), WebActivity.class);
-				i.putExtra("article_content", readArticleContent.get(position));
+				//i.putExtra("article_content", readArticleContent.get(position));
 				i.putExtra("local", true);
-				i.putExtra("scroll_position", readArticleScroll.get(position));
+				//i.putExtra("scroll_position", readArticleScroll.get(position));
 				startActivity(i);
 			}
 		});
@@ -97,9 +126,9 @@ public class ReadingList extends TabActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
 				Intent i = new Intent(getBaseContext(), WebActivity.class);
-				i.putExtra("article_content", favArticleContent.get(position));
+				//i.putExtra("article_content", favArticleContent.get(position));
 				i.putExtra("local", true);
-				i.putExtra("scroll_position", favArticleScroll.get(position));
+				//i.putExtra("scroll_position", favArticleScroll.get(position));
 				startActivity(i);
 			}
 		});
@@ -109,56 +138,31 @@ public class ReadingList extends TabActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
 				Intent i = new Intent(getBaseContext(), WebActivity.class);
-				i.putExtra("article_url", arcArticleUrls.get(position));
+				//i.putExtra("article_url", arcArticleUrls.get(position));
 				i.putExtra("local", false);
-				i.putExtra("scroll_position", arcArticleScroll.get(position));
+				//i.putExtra("scroll_position", arcArticleScroll.get(position));
 				startActivity(i);
 			}
 		});
-		
-		// add views to tab host
-		tabHost.addTab(tabHost.newTabSpec(READ_TAB_TAG).setIndicator(READ_TAB_TAG).setContent(new TabContentFactory() {
-			public View createTabContent(String arg0) {
-				return readList;
-			}
-			
-		}));
-		tabHost.addTab(tabHost.newTabSpec(FAV_TAB_TAG).setIndicator(FAV_TAB_TAG).setContent(new TabContentFactory() {
-			public View createTabContent(String arg0) {
-				return favList;
-			}
-		}));
-		tabHost.addTab(tabHost.newTabSpec(ARC_TAB_TAG).setIndicator(ARC_TAB_TAG).setContent(new TabContentFactory() {
-			public View createTabContent(String arg0) {
-				return arcList;
-			}
-		}));
-		tabHost.setCurrentTab(2);
-		tabHost.setCurrentTab(1);
-		tabHost.setCurrentTab(0);
+
 	}
 
-	public ArrayAdapter<String> getAdapterQuery(String filter, ArrayList<String> contentList, ArrayList<Double> scrollList) {
+	public ReadingListAdapter getAdapterQuery(String filter, ArrayList<Article> articleInfo) {
 		Log.e("getAdapterQuery", "running query");
-		List<String> articleTitles = new ArrayList<String>();
-		int content = 1;
-		if(filter.equals(ARCHIVE + "=1")) {
-			content = 2;
-		}
-		Cursor articlesCursor = database.query(
+		//String url, String domain, String id, String title, String content
+		String[] getStrColumns = new String[] {ARTICLE_URL, ARTICLE_DOMAIN, ARTICLE_ID, ARTICLE_TITLE, ARTICLE_CONTENT};
+		Cursor ac = database.query(
 				ARTICLE_TABLE,
-				new String[] {ARTICLE_TITLE, ARTICLE_CONTENT, ARTICLE_ID, READ_PERCENT},
+				getStrColumns,
 				filter, null, null, null, DATE_ADDED + " DESC");
-		articlesCursor.moveToFirst();
-		if(!articlesCursor.isAfterLast()) {
+		ac.moveToFirst();
+		if(!ac.isAfterLast()) {
 			do {
-				articleTitles.add(articlesCursor.getString(0));
-				contentList.add(articlesCursor.getString(content));
-				scrollList.add(articlesCursor.getDouble(3));
-				
-			} while (articlesCursor.moveToNext());
+				Article tempArticle = new Article(ac.getString(0),ac.getString(1),ac.getString(2),ac.getString(3),ac.getString(4));
+				articleInfo.add(tempArticle);
+			} while (ac.moveToNext());
 		}
-		articlesCursor.close();
-		return new ArrayAdapter<String>(getBaseContext(), android.R.layout.simple_list_item_1, articleTitles);
+		ac.close();
+		return new ReadingListAdapter(getBaseContext(), articleInfo);
 	}
 }

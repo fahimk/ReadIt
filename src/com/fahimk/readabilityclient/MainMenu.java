@@ -202,6 +202,9 @@ public class MainMenu extends Activity {
 							e.printStackTrace();
 						}
 					}
+					else {
+						values.put(ARTICLE_CONTENT, articleResponse.content);
+					}
 					//values.put(ARTICLE_CONTENT, articleResponse.content);
 					values.put(ARTICLE_CONTENT_SIZE, articleResponse.content_size); 
 					values.put(ARTICLE_SHORT_URL, articleResponse.short_url);
