@@ -57,7 +57,7 @@ public class ReadingListAdapter extends BaseAdapter {
 	        String removeTop = content.substring(indexOfStart == -1 ? 0 : indexOfStart);
 	        Matcher m = Pattern.compile("<.+?>").matcher(removeTop);
 	        String strippedContent = m.replaceAll("");
-	        tvContent.setText(strippedContent.trim().substring(0, 90) + "...");
+	        tvContent.setText(strippedContent.trim().substring(0, Math.min(90, strippedContent.length())) + "...");
 	        
 	        return convertView;
 	}

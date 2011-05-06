@@ -2,7 +2,6 @@ package com.fahimk.readabilityclient;
 
 import static com.fahimk.readabilityclient.JavascriptModifyFunctions.*;
 import static com.fahimk.readabilityclient.HelperMethods.*;
-import static com.fahimk.readabilityclient.HTMLOutline.*;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -65,7 +64,6 @@ public class WebActivity extends Activity {
 				Log.e("exception loading url", e.getMessage());
 			}
 		}
-		content = header+content+footer;
 		//Log.e("content", content);
 
 		webView.getSettings().setCacheMode(WebSettings.LOAD_NORMAL);
@@ -131,19 +129,11 @@ public class WebActivity extends Activity {
 
 		@Override
 		public void onPageFinished(WebView view, String url){
-			//			view.loadUrl("javascript:(function() { " +  
-			//					"$(\".article-back-link\").attr(\"href\", \"##\")" +  
-			//			"})()");
-			//
-//			view.loadUrl("javascript:(function() { " +  
-//					//"$(\"a[class='article-back-link']\").attr(\"href\", \"backButton#\");" +
-//					//"var images = document.getElementsByTagName('img'); var l = images.length; for (var i = 0; i < l; i++) {images[0].parentNode.removeChild(images[0])}" +
-//					"var readBar = document.getElementById('read-bar'); readBar.parentNode.removeChild(readBar);"+
-//
-//					"var footNote = document.getElementById('article-marketing'); footNote.parentNode.removeChild(footNote);"+
-//					//"var hLink=document.getElementsByTagName(\"a\"); for (i=0;i<hLink.length;i++){ if(!hLink[i].href){ hLink[i].href = '#'; }}" +
-//					//"$('a:not([href*=\"#\"])').contents().unwrap();"+
-//			"})()");  
+
+			view.loadUrl("javascript:(function() { " +  
+					"var readBar = document.getElementById('read-bar'); readBar.parentNode.removeChild(readBar);"+
+					"var footNote = document.getElementById('article-marketing'); footNote.parentNode.removeChild(footNote);"+
+			"})()");  
 			
 			//need better algorithm for this based on number of words
 			//view.scrollTo(0, (int) (scrollPosition * view.getContentHeight() + view.getHeight()));

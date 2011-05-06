@@ -38,6 +38,7 @@ import com.google.gson.Gson;
 public class MainMenu extends Activity {
 
 	private SQLiteDatabase database;
+	private String zeroUpdate = "2011-01-01 00:00:00";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -69,6 +70,10 @@ public class MainMenu extends Activity {
 
 			public void onClick(View v) {
 				database.delete(ARTICLE_TABLE, null, null);
+				SharedPreferences preferences = getBaseContext().getSharedPreferences(PREF_NAME, 0);
+				SharedPreferences.Editor editor = preferences.edit();
+				editor.putString("previous_update", zeroUpdate);
+				editor.commit();
 			}
 		});
 
@@ -102,16 +107,19 @@ public class MainMenu extends Activity {
 		String oauthTokenSecret;
 		String oauthVerifier;
 		SharedPreferences preferences;
+		String previousUpdate;
+
 		protected void onPreExecute() {
 			preferences = getBaseContext().getSharedPreferences(PREF_NAME, 0);
 			oauthToken = preferences.getString("oauth_token", null); 
 			oauthTokenSecret = preferences.getString("oauth_token_secret", null);
 			oauthVerifier = preferences.getString("oauth_verifier", null);
-			
+			previousUpdate = preferences.getString("previous_update", zeroUpdate);
+
 			tempDialog = new ProgressDialog(MainMenu.this);
 			tempDialog.setMessage("Connecting to server...");
 			tempDialog.show();
-			
+
 			progressDialog = new ProgressDialog(MainMenu.this);
 			progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			progressDialog.setMessage("Synchronizing Articles...");
@@ -121,9 +129,10 @@ public class MainMenu extends Activity {
 
 		protected Boolean doInBackground(Void... params) {
 			String extraParams = "";
+			Log.e("previousUpdate", previousUpdate);
 			extraParams = String.format(
 					"&oauth_token=%s&oauth_token_secret=%s&oauth_verifier=%s&updated_since=%s", 
-					oauthToken, oauthTokenSecret, oauthVerifier, "2011-05-04");
+					oauthToken, oauthTokenSecret, oauthVerifier, previousUpdate.substring(0,10));
 
 			//			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
 			//			Log.e("previousUpdate", previousUpdate);
@@ -172,40 +181,21 @@ public class MainMenu extends Activity {
 						new String[] {MY_ID},
 						whereIDSame, null, null, null, null);
 				if(articleCursor.getCount() > 0) {
-						database.update(ARTICLE_TABLE, values, whereIDSame, null);
-						Log.e("updated", bm.article.title);
+					database.update(ARTICLE_TABLE, values, whereIDSame, null);
+					Log.e("updated", bm.article.title);
 				}
-				else {
-					String params2 = String.format("&oauth_nonce=%s&oauth_timestamp=%s" + 
-							"&oauth_consumer_key=%s&oauth_signature=%s&oauth_signature_method=PLAINTEXT" +
-							"&xoauth_lang_pref=en-us", 
-							HelperMethods.getNonce(),HelperMethods.getTimestamp(),HelperMethods.API_KEY,HelperMethods.API_SECRET + oauthTokenSecret);
-					String articlesUrl = "https://readability.com" + bm.article_href + "/?" + extraParams + params2;
-					InputStream articlesSource = getStream(articlesUrl);
-					Gson articleGson = new Gson();
-					Reader articleReader = new InputStreamReader(articlesSource);
-					SearchArticle articleResponse = articleGson.fromJson(articleReader, SearchArticle.class);
-					values.put(ARTICLE_AUTHOR, articleResponse.author);
-					Log.e("content", articleResponse.content);
-					//if(!bm.archive) {
-					//	try {
-					//		String html = parseHTML("https://readability.com/mobile/articles/"+articleResponse.id);
-					//		values.put(ARTICLE_CONTENT, html);
-					//	} catch (Exception e) {
-					//		e.printStackTrace();
-					//	}
-					//}
-					//else {
-						values.put(ARTICLE_CONTENT, articleResponse.content);
-					//}
-					//values.put(ARTICLE_CONTENT, articleResponse.content);
-					values.put(ARTICLE_CONTENT_SIZE, articleResponse.content_size); 
-					values.put(ARTICLE_SHORT_URL, articleResponse.short_url);
+				else if(!bm.archive) {
+					try {
+						String html = parseHTML("https://readability.com/mobile/articles/"+bm.article.id);
+						values.put(ARTICLE_CONTENT, html);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
 
-					database.insert(ARTICLE_TABLE, null, values);
-					Log.e("inserted", bm.article.title );
-				}
-				articleCursor.close();
+
+				database.insert(ARTICLE_TABLE, null, values);
+				Log.e("inserted", bm.article.title );
 				count++;
 				publishProgress(count, bookmarks.size());
 			}
@@ -223,9 +213,14 @@ public class MainMenu extends Activity {
 			}
 			progressDialog.setProgress(values[0]);
 		}
-		
+
 		protected void onPostExecute(Boolean unused) {
-			progressDialog.dismiss();
+			if(tempDialog.isShowing()) {
+				tempDialog.dismiss();
+			}
+			if(progressDialog.isShowing()) {
+				progressDialog.dismiss();
+			}
 		}
 
 	}
