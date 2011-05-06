@@ -116,6 +116,7 @@ public class ReadingList extends TabActivity {
 				Intent i = new Intent(getBaseContext(), WebActivity.class);
 				//i.putExtra("article_content", readArticleContent.get(position));
 				i.putExtra("local", true);
+				i.putExtra("article_content", readArticlesInfo.get(position).content);
 				//i.putExtra("scroll_position", readArticleScroll.get(position));
 				startActivity(i);
 			}

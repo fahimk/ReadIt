@@ -69,10 +69,6 @@ public class MainMenu extends Activity {
 
 			public void onClick(View v) {
 				database.delete(ARTICLE_TABLE, null, null);
-				SharedPreferences preferences = getBaseContext().getSharedPreferences(PREF_NAME, 0);
-				SharedPreferences.Editor editor = preferences.edit();
-				editor.putString("previous_update", "0");
-				editor.commit();
 			}
 		});
 
@@ -105,14 +101,12 @@ public class MainMenu extends Activity {
 		String oauthToken;
 		String oauthTokenSecret;
 		String oauthVerifier;
-		String previousUpdate;
 		SharedPreferences preferences;
 		protected void onPreExecute() {
 			preferences = getBaseContext().getSharedPreferences(PREF_NAME, 0);
 			oauthToken = preferences.getString("oauth_token", null); 
 			oauthTokenSecret = preferences.getString("oauth_token_secret", null);
 			oauthVerifier = preferences.getString("oauth_verifier", null);
-			previousUpdate = preferences.getString("previous_update", "0");
 			
 			tempDialog = new ProgressDialog(MainMenu.this);
 			tempDialog.setMessage("Connecting to server...");
@@ -178,10 +172,8 @@ public class MainMenu extends Activity {
 						new String[] {MY_ID},
 						whereIDSame, null, null, null, null);
 				if(articleCursor.getCount() > 0) {
-					if(bm.date_updated.compareTo(previousUpdate) >= 0) {
 						database.update(ARTICLE_TABLE, values, whereIDSame, null);
 						Log.e("updated", bm.article.title);
-					}
 				}
 				else {
 					String params2 = String.format("&oauth_nonce=%s&oauth_timestamp=%s" + 
@@ -194,17 +186,18 @@ public class MainMenu extends Activity {
 					Reader articleReader = new InputStreamReader(articlesSource);
 					SearchArticle articleResponse = articleGson.fromJson(articleReader, SearchArticle.class);
 					values.put(ARTICLE_AUTHOR, articleResponse.author);
-					if(!bm.archive) {
-						try {
-							String html = parseHTML("https://readability.com/mobile/articles/"+articleResponse.id);
-							values.put(ARTICLE_CONTENT, html);
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-					else {
+					Log.e("content", articleResponse.content);
+					//if(!bm.archive) {
+					//	try {
+					//		String html = parseHTML("https://readability.com/mobile/articles/"+articleResponse.id);
+					//		values.put(ARTICLE_CONTENT, html);
+					//	} catch (Exception e) {
+					//		e.printStackTrace();
+					//	}
+					//}
+					//else {
 						values.put(ARTICLE_CONTENT, articleResponse.content);
-					}
+					//}
 					//values.put(ARTICLE_CONTENT, articleResponse.content);
 					values.put(ARTICLE_CONTENT_SIZE, articleResponse.content_size); 
 					values.put(ARTICLE_SHORT_URL, articleResponse.short_url);

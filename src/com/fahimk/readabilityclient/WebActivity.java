@@ -2,6 +2,8 @@ package com.fahimk.readabilityclient;
 
 import static com.fahimk.readabilityclient.JavascriptModifyFunctions.*;
 import static com.fahimk.readabilityclient.HelperMethods.*;
+import static com.fahimk.readabilityclient.HTMLOutline.*;
+
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -63,8 +65,8 @@ public class WebActivity extends Activity {
 				Log.e("exception loading url", e.getMessage());
 			}
 		}
-
-		Log.e("content", content);
+		content = header+content+footer;
+		//Log.e("content", content);
 
 		webView.getSettings().setCacheMode(WebSettings.LOAD_NORMAL);
 		webView.getSettings().setJavaScriptEnabled(true);
@@ -133,18 +135,18 @@ public class WebActivity extends Activity {
 			//					"$(\".article-back-link\").attr(\"href\", \"##\")" +  
 			//			"})()");
 			//
-			view.loadUrl("javascript:(function() { " +  
-					//"$(\"a[class='article-back-link']\").attr(\"href\", \"backButton#\");" +
-					//"var images = document.getElementsByTagName('img'); var l = images.length; for (var i = 0; i < l; i++) {images[0].parentNode.removeChild(images[0])}" +
-					"var readBar = document.getElementById('read-bar'); readBar.parentNode.removeChild(readBar);"+
-
-					"var footNote = document.getElementById('article-marketing'); footNote.parentNode.removeChild(footNote);"+
-					//"var hLink=document.getElementsByTagName(\"a\"); for (i=0;i<hLink.length;i++){ if(!hLink[i].href){ hLink[i].href = '#'; }}" +
-					//"$('a:not([href*=\"#\"])').contents().unwrap();"+
-			"})()");  
+//			view.loadUrl("javascript:(function() { " +  
+//					//"$(\"a[class='article-back-link']\").attr(\"href\", \"backButton#\");" +
+//					//"var images = document.getElementsByTagName('img'); var l = images.length; for (var i = 0; i < l; i++) {images[0].parentNode.removeChild(images[0])}" +
+//					"var readBar = document.getElementById('read-bar'); readBar.parentNode.removeChild(readBar);"+
+//
+//					"var footNote = document.getElementById('article-marketing'); footNote.parentNode.removeChild(footNote);"+
+//					//"var hLink=document.getElementsByTagName(\"a\"); for (i=0;i<hLink.length;i++){ if(!hLink[i].href){ hLink[i].href = '#'; }}" +
+//					//"$('a:not([href*=\"#\"])').contents().unwrap();"+
+//			"})()");  
 			
 			//need better algorithm for this based on number of words
-			view.scrollTo(0, (int) (scrollPosition * view.getContentHeight() + view.getHeight()));
+			//view.scrollTo(0, (int) (scrollPosition * view.getContentHeight() + view.getHeight()));
 			addButtonListeners(findViewById(R.id.mainFrame), webView);
 			setupCustomPanel();
 			setupDefaultTheme(webView);

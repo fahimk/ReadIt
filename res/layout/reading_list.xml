@@ -2,12 +2,12 @@
 <TabHost xmlns:android="http://schemas.android.com/apk/res/android"
 	android:id="@android:id/tabhost" android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
-	<LinearLayout android:background="#FFFFFF" android:orientation="vertical"
+	<LinearLayout  android:orientation="vertical"
 		android:layout_width="fill_parent" android:layout_height="fill_parent">
-		<TabWidget android:id="@android:id/tabs"
+		<TabWidget android:layout_marginTop="20dp" android:id="@android:id/tabs"
 			android:layout_width="fill_parent" android:layout_height="wrap_content" />
 		<FrameLayout android:id="@android:id/tabcontent"
-			android:layout_width="fill_parent" android:layout_height="fill_parent">
+			android:background="#FFFFFF" android:layout_width="fill_parent" android:layout_height="fill_parent">
 			<ListView android:cacheColorHint="#00000000" android:id="@+id/list_read" android:layout_width="fill_parent"
 				android:layout_height="fill_parent" />
 			<ListView android:cacheColorHint="#00000000" android:id="@+id/list_fav" android:layout_width="fill_parent"
