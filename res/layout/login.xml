@@ -2,10 +2,19 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:orientation="vertical" android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
-	<EditText android:id="@+id/textview_username" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" />
-	<EditText android:id="@+id/textview_password" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" />
-	<Button android:id="@+id/button_login" android:text="Login" android:layout_width="fill_parent"
-    android:layout_height="wrap_content"/>		
+	<Button android:id="@+id/button_login" android:text="Connect Readability Account" android:layout_width="fill_parent"
+    android:layout_height="wrap_content"/>
+   	<RelativeLayout android:layout_width="fill_parent"
+		android:layout_height="wrap_content">
+		<Button android:id="@+id/searchButton" android:text="Read!"
+			android:layout_alignParentRight="true" android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+		</Button>
+		<EditText android:id="@+id/searchText"
+			android:inputType="textAutoCorrect"
+			android:imeOptions="actionSearch"
+			android:maxLength="2000" android:layout_toLeftOf="@id/searchButton"
+			android:layout_height="wrap_content" android:layout_width="fill_parent">
+		</EditText>
+	</RelativeLayout>	
 </LinearLayout>

@@ -1,15 +1,71 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:orientation="vertical" android:layout_width="fill_parent"
-	android:layout_height="fill_parent">
-	<Button android:text="Read" android:id="@+id/button_read"
-		android:layout_width="fill_parent" android:layout_height="wrap_content" />
-	<Button android:text="Sync" android:id="@+id/button_sync"
-		android:layout_width="fill_parent" android:layout_height="wrap_content" />
-	<Button android:text="Add" android:id="@+id/button_add"
-		android:layout_width="fill_parent" android:layout_height="wrap_content" />
-	<Button android:text="Clear Database" android:id="@+id/button_delete"
-		android:layout_width="fill_parent" android:layout_height="wrap_content" />
-	<Button android:text="Exit" android:id="@+id/button_exit"
-		android:layout_width="fill_parent" android:layout_height="wrap_content" />
+	android:orientation="vertical" android:layout_height="fill_parent"
+	android:background="#E7E6E2" android:layout_width="fill_parent">
+	<RelativeLayout android:padding="20dp"
+		android:layout_width="fill_parent" android:layout_height="wrap_content">
+		<Button android:id="@+id/searchButton" android:text="Read!"
+			android:layout_alignParentRight="true" android:layout_width="wrap_content"
+			android:layout_height="wrap_content">
+		</Button>
+		<EditText android:id="@+id/searchText" android:inputType="textAutoCorrect"
+			android:imeOptions="actionSearch" android:maxLength="2000"
+			android:layout_toLeftOf="@id/searchButton" android:layout_height="wrap_content"
+			android:layout_width="fill_parent">
+		</EditText>
+	</RelativeLayout>
+	<TextView android:padding="20dp" android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:text="or authorize your readability account to access the features below" />
+	<TableLayout android:gravity="center" android:layout_width="fill_parent"
+		android:layout_height="fill_parent">
+		<TableRow android:padding="20dp">
+			<LinearLayout android:gravity="center"
+				android:layout_weight="1" android:layout_width="0dip"
+				android:orientation="vertical" android:layout_height="wrap_content">
+				<ImageView android:id="@+id/button_bookmarks"
+					android:layout_width="75dp" android:layout_height="75dp"
+					android:adjustViewBounds="true" android:src="@drawable/icon_read" />
+				<TextView android:text="Bookmarks" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+			</LinearLayout>
+			<LinearLayout android:gravity="center"
+				android:orientation="vertical" android:layout_weight="1"
+				android:layout_width="0dip" android:layout_height="wrap_content">
+				<ImageView android:id="@+id/button_sync"
+					android:layout_width="75dp" android:layout_height="75dp"
+					android:adjustViewBounds="true" android:src="@drawable/icon_sync" />
+				<TextView android:text="Sync" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+			</LinearLayout>
+		</TableRow>
+		<TableRow android:padding="20dp">
+			<LinearLayout android:gravity="center"
+				android:orientation="vertical" android:layout_weight="1"
+				android:layout_width="0dip" android:layout_height="wrap_content">
+				<ImageView android:id="@+id/button_add"
+					android:layout_width="75dp" android:layout_height="75dp"
+					android:adjustViewBounds="true" android:src="@drawable/icon_add" />
+				<TextView android:text="Add" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+			</LinearLayout>
+			<LinearLayout android:gravity="center"
+				android:orientation="vertical" android:layout_weight="1"
+				android:layout_width="0dip" android:layout_height="wrap_content">
+				<ImageView android:id="@+id/button_exit"
+					android:layout_width="75dp" android:layout_height="75dp"
+					android:adjustViewBounds="true" android:src="@drawable/icon_exit" />
+				<TextView android:text="Exit" android:layout_width="wrap_content"
+					android:layout_height="wrap_content" />
+			</LinearLayout>
+		</TableRow>
+		<TableRow>
+			<Button android:text="Clear Database" android:id="@+id/button_delete"
+				android:layout_weight="1" android:layout_width="0dip"
+				android:layout_height="wrap_content" />
+			<Button android:text="Authorize" android:id="@+id/button_authorize"
+				android:layout_weight="1" android:layout_width="0dip"
+				android:layout_height="wrap_content" />
+		</TableRow>
+	</TableLayout>
 </LinearLayout>
