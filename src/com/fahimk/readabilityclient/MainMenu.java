@@ -1,29 +1,7 @@
 package com.fahimk.readabilityclient;
 
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARCHIVE;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_CONTENT;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_DOMAIN;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_HREF;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_ID;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_TABLE;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_TITLE;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.ARTICLE_URL;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.BOOKMARK_ID;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.DATE_ADDED;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.DATE_FAVORITED;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.DATE_UPDATED;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.FAVORITE;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.MY_ID;
-import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.READ_PERCENT;
-import static com.fahimk.readabilityclient.HelperMethods.API_SECRET;
-import static com.fahimk.readabilityclient.HelperMethods.OAUTH_ACCESS;
-import static com.fahimk.readabilityclient.HelperMethods.OAUTH_AUTHORIZE;
-import static com.fahimk.readabilityclient.HelperMethods.OAUTH_REQUEST;
-import static com.fahimk.readabilityclient.HelperMethods.PREF_NAME;
-import static com.fahimk.readabilityclient.HelperMethods.URL_CALLBACK;
-import static com.fahimk.readabilityclient.HelperMethods.getStream;
-import static com.fahimk.readabilityclient.HelperMethods.parseHTML;
-import static com.fahimk.readabilityclient.HelperMethods.requestApiUrl;
+import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.*;
+import static com.fahimk.readabilityclient.HelperMethods.*;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -51,12 +29,11 @@ import org.apache.http.protocol.HTTP;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -64,10 +41,10 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.fahimk.jsonobjects.Bookmark;
 import com.fahimk.jsonobjects.SearchBookmarks;
@@ -101,29 +78,85 @@ public class MainMenu extends Activity {
 
 	public void setupViews() {
 		boolean authorized = checkAuthorization();
+		Log.e("authorization", "is " + authorized);
 		Button authorizeButton = (Button) findViewById(R.id.button_authorize);
 		Button deleteButton = (Button) findViewById(R.id.button_delete);
-		
+		Button readNowButton = (Button) findViewById(R.id.button_readnow);
+
+		final TextView urlRead = (TextView) findViewById(R.id.edittext_url);
+
+		//the main icon buttons
 		final ImageView bookmarksButton = (ImageView) findViewById(R.id.button_bookmarks);
 		final ImageView syncButton = (ImageView) findViewById(R.id.button_sync);
 		final ImageView addButton = (ImageView) findViewById(R.id.button_add);
 		final ImageView exitButton = (ImageView) findViewById(R.id.button_exit);
-
-		handleTouches(bookmarksButton);
-		handleTouches(syncButton);
-		handleTouches(addButton);
-		handleTouches(exitButton);
-
-		authorizeButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				try {
-					authorize();
-				} catch (Exception e) {
-					Log.e("error", e.toString());
+		final ImageView helpButton = (ImageView) findViewById(R.id.button_help);
+		final ImageView settingsButton = (ImageView) findViewById(R.id.button_settings);
+		final TextView settingsText = (TextView) findViewById(R.id.text_settings);
+		
+		if(authorized) {
+			settingsButton.setImageResource(R.drawable.icon_settings);
+			settingsText.setText("Settings");
+			
+			removeImageEffects(bookmarksButton);
+			removeImageEffects(syncButton);
+			removeImageEffects(addButton);
+			
+			handleTouches(bookmarksButton);
+			handleTouches(syncButton);
+			handleTouches(addButton);
+			
+			bookmarksButton.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					startActivity(new Intent(getBaseContext(), ReadingList.class));
 				}
+			});
+
+			syncButton.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					new SyncArticles().execute();
+				}
+			});
+
+		}
+		//not authorized yet
+		else {
+			settingsButton.setImageResource(R.drawable.icon_auth);
+			settingsText.setText("Authorize");
+			
+			lightenImage(bookmarksButton);
+			lightenImage(syncButton);
+			lightenImage(addButton);
+			
+			settingsButton.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					try {
+						authorize();
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			});
+		}
+		
+		handleTouches(exitButton);
+		handleTouches(helpButton);
+		handleTouches(settingsButton);
+		
+		
+		readNowButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+				imm.hideSoftInputFromWindow(urlRead.getWindowToken(), 0);
+				GetArticleTask fetchContent = new GetArticleTask();
+				String url = urlRead.getText().toString();
+				if(url != "") {
+					fetchContent.execute(url);
+				}
+
 			}
 		});
-
+		
 		deleteButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
@@ -134,18 +167,7 @@ public class MainMenu extends Activity {
 				editor.commit();
 			}
 		});
-		bookmarksButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				startActivity(new Intent(getBaseContext(), ReadingList.class));
-			}
-		});
-
-		syncButton.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				new SyncArticles().execute();
-			}
-		});
-
+		
 		exitButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				database.close();
@@ -155,12 +177,33 @@ public class MainMenu extends Activity {
 
 	}
 
+	public void launchWebBrowser(String visitUrl) {
+		if(visitUrl != "") {
+			Intent i = new Intent(getBaseContext(), WebActivity.class);
+			i.putExtra("article_url", visitUrl);
+			i.putExtra("local", false);
+			startActivity(i);
+		}
+	}
+	
+	public void removeImageEffects(ImageView v) {
+		v.setColorFilter(null);
+	}
+	
+	public void darkenImage(ImageView v) {
+		v.setColorFilter(0x55000000, PorterDuff.Mode.SRC_ATOP);
+	}
+	
+	public void lightenImage(ImageView v) {
+		v.setColorFilter(0x99FFFFFF, PorterDuff.Mode.SRC_ATOP);
+	}
+	
 	public void handleTouches(ImageView button) {
 		button.setOnTouchListener(new View.OnTouchListener() {
-			
+
 			public boolean onTouch(View v, MotionEvent m) {
 				if(m.getAction() == MotionEvent.ACTION_DOWN) {
-					((ImageView) v).setColorFilter(0xAA000000, PorterDuff.Mode.MULTIPLY);
+					darkenImage((ImageView) v);
 				}
 				else if (m.getAction() == MotionEvent.ACTION_UP){
 					((ImageView) v).setColorFilter(null);
@@ -192,22 +235,32 @@ public class MainMenu extends Activity {
 		Uri parseTokens = Uri.parse("?"+tokenString);
 		oauthToken = parseTokens.getQueryParameter("oauth_token");
 		oauthTokenSecret = parseTokens.getQueryParameter("oauth_token_secret");
+		SharedPreferences tokenInfo = getBaseContext().getSharedPreferences(PREF_NAME, 0);
+		SharedPreferences.Editor editor = tokenInfo.edit();
+		editor.putString("oauth_token", oauthToken);
+		editor.putString("oauth_token_secret", oauthTokenSecret);
+		editor.commit();
 		Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(requestApiUrl(OAUTH_AUTHORIZE, API_SECRET, "&" + tokenString)));
-		intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
-				| Intent.FLAG_ACTIVITY_NO_HISTORY
-				| Intent.FLAG_FROM_BACKGROUND);
+//		intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+//				| Intent.FLAG_ACTIVITY_NO_HISTORY
+//				| Intent.FLAG_FROM_BACKGROUND);
 		startActivity(intent);
 	}
+	
 
 	@Override
-	public void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-
-		Uri uri = intent.getData();
+	public void onResume() {
+		super.onResume();
+		Uri uri = getIntent().getData();
 		if (uri != null && uri.toString().startsWith(URL_CALLBACK)) {
 			try {
+				SharedPreferences tokenInfo = getBaseContext().getSharedPreferences(PREF_NAME, 0);
+				oauthToken = tokenInfo.getString("oauth_token", null);
+				oauthTokenSecret = tokenInfo.getString("oauth_token_secret", null);
+				
 				HttpClient httpclient = new DefaultHttpClient();
 				String oauthVerifier = uri.getQueryParameter("oauth_verifier");
+				Log.e("oauthToken", oauthTokenSecret + " hi");
 				String url = requestApiUrl(OAUTH_ACCESS, API_SECRET+oauthTokenSecret, 
 						String.format(
 								"&oauth_token=%s&oauth_token_secret=%s&oauth_verifier=%s", 
@@ -217,31 +270,52 @@ public class MainMenu extends Activity {
 
 				BufferedReader a = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 				String tokenString = a.readLine();
-
+				
 				if (tokenString == null)
 					return;
 				Uri parseTokens = Uri.parse("?"+tokenString);
 				oauthToken = parseTokens.getQueryParameter("oauth_token");
 				oauthTokenSecret = parseTokens.getQueryParameter("oauth_token_secret");
 
-				SharedPreferences tokenInfo = getBaseContext().getSharedPreferences(PREF_NAME, 0);
 				SharedPreferences.Editor editor = tokenInfo.edit();
 				editor.putString("oauth_token", oauthToken);
 				editor.putString("oauth_token_secret", oauthTokenSecret);
 				editor.putString("oauth_verifier", oauthVerifier);
 				editor.commit();
+				setupViews();
 			} catch (Exception e) {
-				Log.e("exception, onNewIntent", e.getMessage());
+				Log.e("exception, onNewIntent", "hi");
+				e.printStackTrace();
 			}
 		} else {
 			Log.e("error", "empty");
 		}
 	}
 
-	public class GetArticleTask extends AsyncTask<String, Void, Boolean> {
+	public class GetArticleTask extends AsyncTask<String, Void, String> {
+		ProgressDialog progress;
+		String articleId;
 
 		@Override
-		protected Boolean doInBackground(String... urls) {
+		protected void onPostExecute(String url) {
+			if(progress.isShowing()) {
+				progress.dismiss();
+			}
+			if(url == "") {
+				displayAlert(MainMenu.this, "Error", "Could not parse the url, please check and try again.");
+			}
+		
+			launchWebBrowser(url);
+		}
+
+		protected void onPreExecute() {
+			progress = new ProgressDialog(MainMenu.this);
+			progress.setMessage("Parsing using readability.com...");
+			progress.show();
+		}
+
+		@Override
+		protected String doInBackground(String... urls) {
 			String url = urls[0];
 
 			try {
@@ -282,13 +356,12 @@ public class MainMenu extends Activity {
 				String articlesObject = "/articles/";
 				int begin = line.indexOf("/articles/");
 				int end = line.indexOf("\"", begin);
-				Log.e("string", line.substring(begin+articlesObject.length(), end));
-
+				return line.substring(begin+articlesObject.length(), end);
+				
 			}
 			catch(Exception e) {
-				Log.e("error", e.getLocalizedMessage());
+				return "";
 			}
-			return true;
 		}
 
 	}
