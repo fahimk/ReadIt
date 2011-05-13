@@ -8,9 +8,8 @@
 			android:layout_alignParentRight="true" android:layout_width="wrap_content"
 			android:layout_height="wrap_content">
 		</Button>
-		<EditText android:id="@+id/edittext_url" android:inputType="textAutoCorrect"
-			android:maxLength="3000" android:layout_toLeftOf="@id/button_readnow"
-			android:layout_height="wrap_content" android:layout_width="fill_parent">
+		<EditText android:id="@+id/edittext_url" android:inputType="textFilter"
+			android:maxLength="3000" android:layout_toLeftOf="@id/button_readnow"  android:imeOptions="actionGo" android:singleLine="true" android:layout_height="wrap_content" android:layout_width="fill_parent">
 		</EditText>
 	</RelativeLayout>
 	<TextView android:paddingLeft="40dp" android:paddingRight="40dp"

@@ -129,6 +129,7 @@ public class ReadingList extends TabActivity {
 				Intent i = new Intent(getBaseContext(), WebActivity.class);
 				//i.putExtra("article_content", favArticleContent.get(position));
 				i.putExtra("local", true);
+				i.putExtra("article_content", readArticlesInfo.get(position).content);
 				//i.putExtra("scroll_position", favArticleScroll.get(position));
 				startActivity(i);
 			}
@@ -141,6 +142,7 @@ public class ReadingList extends TabActivity {
 				Intent i = new Intent(getBaseContext(), WebActivity.class);
 				//i.putExtra("article_url", arcArticleUrls.get(position));
 				i.putExtra("local", false);
+				i.putExtra("article_url", readArticlesInfo.get(position).id);
 				//i.putExtra("scroll_position", arcArticleScroll.get(position));
 				startActivity(i);
 			}

@@ -1,5 +1,10 @@
 package com.fahimk.readabilityclient;
 
+import static com.fahimk.readabilityclient.HelperMethods.API_SECRET;
+import static com.fahimk.readabilityclient.HelperMethods.OAUTH_AUTHORIZE;
+import static com.fahimk.readabilityclient.HelperMethods.displayAlert;
+import static com.fahimk.readabilityclient.HelperMethods.requestApiUrl;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,6 +22,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -34,9 +41,11 @@ public class HelperMethods {
 	public final static String OAUTH_REQUEST = "oauth/request_token/";
 	public final static String OAUTH_ACCESS = "oauth/access_token/";
 
-	public final static int MSG_START = 0;
-	public final static int MSG_END = 1;
 
+	public final static int MSG_END = 1;
+	public final static int MSG_FAIL = 2;
+	public final static int MSG_START_SETUPVIEWS = 3;
+	public final static int MSG_START_WEBVIEWINTENT = 4;
 
 	public static String requestApiUrl(String page, String apiSecret, String extras) {
 		String url = String.format(URL_API + "%s?&oauth_nonce=%s&oauth_timestamp=%s" + 
@@ -46,9 +55,9 @@ public class HelperMethods {
 
 		return url;
 	}
+	
 	public static String getNonce() {
-		Random random = new Random();
-		return Long.toString(Math.abs(random.nextLong()), 60000);
+		return Long.toString(new Random().nextLong());
 	}
 
 	public static String getTimestamp() {
@@ -117,23 +126,11 @@ public class HelperMethods {
 		alertDialog.show();
 	}
 
-	public class messageHandler extends Handler {
-
-		ProgressDialog pDialog;
-		@Override
-		public void handleMessage(Message msg) {
-			MyDialog setupDialog = (MyDialog) msg.obj;
-			switch(msg.what) {
-			case MSG_START:
-				pDialog = new ProgressDialog(setupDialog.context);
-				pDialog.setTitle(setupDialog.title);
-				pDialog.setMessage(setupDialog.message);
-				pDialog.show();
-			case MSG_END:
-				if(pDialog.isShowing())
-					pDialog.dismiss();
-			}
-		}
-
+	public static ProgressDialog createProgressDialog(Context context, String title, String message) {
+		ProgressDialog pDialog = new ProgressDialog(context);
+		pDialog.setTitle(title);
+		pDialog.setMessage(message);
+		return pDialog;
 	}
+	
 }

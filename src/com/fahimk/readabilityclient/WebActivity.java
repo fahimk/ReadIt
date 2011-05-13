@@ -3,10 +3,16 @@ package com.fahimk.readabilityclient;
 import static com.fahimk.readabilityclient.JavascriptModifyFunctions.*;
 import static com.fahimk.readabilityclient.HelperMethods.*;
 
+import com.fahimk.readabilityclient.MainMenu.MessageHandler;
+
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -47,7 +53,7 @@ public class WebActivity extends Activity {
 		Bundle data = getIntent().getExtras();
 		String content = "";
 		String url = "";
-		
+
 		boolean isLocal = false;
 		if(data != null) {
 			content = data.getString("article_content");
@@ -59,23 +65,53 @@ public class WebActivity extends Activity {
 		if(!isLocal && url != null) {
 			try {
 				String s = "https://www.readability.com/mobile/articles/"+url;
-				content = parseHTML(s);
+				getHTMLThread(s);
 			} catch (Exception e) {
 				Log.e("exception loading url", e.getMessage());
 			}
 		}
+		else {
+			initializeWV(content);
+		}
 		//Log.e("content", content);
 
+	}
+
+	public void initializeWV(String content) {
 		webView.getSettings().setCacheMode(WebSettings.LOAD_NORMAL);
 		webView.getSettings().setJavaScriptEnabled(true);
 		webView.setScrollBarStyle(WebView.SCROLLBARS_OUTSIDE_OVERLAY);
 		webView.setWebViewClient(new CustomWebView());
-
 		webView.loadDataWithBaseURL("", content, "text/html", "UTF-8", "");
-
-
 	}
 
+
+
+	private void getHTMLThread(final String url) throws Exception {
+		ProgressDialog pDialog = HelperMethods.createProgressDialog(WebActivity.this, "Loading", "retrieving content...");
+		pDialog.show();
+		final Handler myHandler = new WebHandler(pDialog);
+		final Message msg = new Message();
+		new Thread() {
+			public void run() {
+				try {
+					Looper.prepare();
+					String html = parseHTML(url);
+					msg.obj = html;
+					msg.what = MSG_END;
+					myHandler.sendMessage(msg);
+
+				}
+				catch(Exception e) {
+					e.printStackTrace();
+					msg.what = MSG_FAIL;
+					myHandler.sendMessage(msg);
+
+				}
+			}
+
+		}.start();
+	}
 	private void setupCustomPanel() {
 		final EditPanel popup = (EditPanel) findViewById(R.id.popup_window);
 		popup.setVisibility(View.GONE);
@@ -134,13 +170,39 @@ public class WebActivity extends Activity {
 					"var readBar = document.getElementById('read-bar'); readBar.parentNode.removeChild(readBar);"+
 					"var footNote = document.getElementById('article-marketing'); footNote.parentNode.removeChild(footNote);"+
 			"})()");  
-			
+
 			//need better algorithm for this based on number of words
 			//view.scrollTo(0, (int) (scrollPosition * view.getContentHeight() + view.getHeight()));
 			addButtonListeners(findViewById(R.id.mainFrame), webView);
 			setupCustomPanel();
 			setupDefaultTheme(webView);
 		} 
+
+	}
+	
+	public class WebHandler extends Handler {
+
+		ProgressDialog pDialog;
+
+		public WebHandler(ProgressDialog pd) {
+			super();
+			pDialog = pd;
+		}
+		@Override
+		public void handleMessage(Message msg) {
+			switch(msg.what) {
+			case MSG_END:
+				if(pDialog.isShowing())
+					pDialog.dismiss();
+				initializeWV((String) msg.obj);
+				break;
+			case MSG_FAIL:
+				if(pDialog.isShowing())
+					pDialog.dismiss();
+				displayAlert(pDialog.getContext(), "Error", "Could not connect to readability.com, please check your internet connection status and try again.");
+				break;
+			}
+		}
 
 	}
 }
