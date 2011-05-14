@@ -57,6 +57,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -66,6 +67,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.fahimk.jsonobjects.Bookmark;
@@ -126,6 +128,12 @@ public class MainMenu extends Activity {
 			handleTouches(bookmarksButton);
 			handleTouches(syncButton);
 			handleTouches(addButton);
+
+			addButton.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					addBookmark();
+				}
+			});
 
 			bookmarksButton.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
@@ -206,6 +214,53 @@ public class MainMenu extends Activity {
 			}
 		});
 
+	}
+
+
+	protected void addBookmark() {
+		ProgressDialog pDialog = HelperMethods.createProgressDialog(MainMenu.this, "Loading", "retrieving authorization url...");
+		pDialog.show();
+		final Handler myHandler = new MessageHandler(pDialog);
+		final Message msg = new Message();
+		new Thread() {
+			public void run() {
+				try {
+					Looper.prepare();
+					final TextView urlRead = (TextView) findViewById(R.id.edittext_url);
+					String url = urlRead.getText().toString();
+					InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+					imm.hideSoftInputFromWindow(urlRead.getWindowToken(), 0);
+					if(url == "" || url.length() < 3) {
+						Toast msg = Toast.makeText(MainMenu.this, "Please enter the article url in the textbox above.", Toast.LENGTH_LONG);
+						msg.show();
+					}
+					else {
+						SharedPreferences preferences = getBaseContext().getSharedPreferences(PREF_NAME, 0);
+						String oauthToken = preferences.getString("oauth_token", null); 
+						String oauthTokenSecret = preferences.getString("oauth_token_secret", null);
+						String oauthVerifier = preferences.getString("oauth_verifier", null);
+						String extraParams = String.format(
+								"&oauth_token=%s&oauth_token_secret=%s&oauth_verifier=%s", 
+								oauthToken, oauthTokenSecret, oauthVerifier);
+						String bookmarksUrl = requestApiUrl("bookmarks", API_SECRET + oauthTokenSecret, extraParams);
+						List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+						nameValuePairs.add(new BasicNameValuePair("url", url));
+
+						String message = HelperMethods.postData(bookmarksUrl, nameValuePairs);
+						msg.obj = message;
+						msg.arg1 = MSG_START_SYNCARTICLES;
+						msg.what = MSG_END;
+						myHandler.sendMessage(msg);
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					msg.what = MSG_FAIL;
+					myHandler.sendMessage(msg);
+				}
+
+			}
+		}.start();
 	}
 
 	public void launchWebBrowser(String visitUrl) {
@@ -397,6 +452,10 @@ public class MainMenu extends Activity {
 					Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(requestApiUrl(OAUTH_AUTHORIZE, API_SECRET, "&" + tokenString)));
 					startActivity(intent);
 					break;
+				case MSG_START_SYNCARTICLES:
+					new SyncArticles().execute();
+					Toast message = Toast.makeText(MainMenu.this, "Bookmark added.", Toast.LENGTH_LONG);
+					message.show();
 				}
 				break;
 			case MSG_FAIL:
@@ -539,18 +598,18 @@ public class MainMenu extends Activity {
 				Log.e("bookmarksSource", "url request was empty");
 				return false;
 			}
-			Log.e("bookmarksSource", bookmarksSource.toString());
+			//Log.e("bookmarksSource", bookmarksSource.toString() + "abc");
 			Gson bookmarkGson = new Gson();
 			Reader bookmarkReader = new InputStreamReader(bookmarksSource);
 			SearchBookmarks response = bookmarkGson.fromJson(bookmarkReader, SearchBookmarks.class);
 
 			List<Bookmark> bookmarks = response.bookmarks;
-			String latestUpdate = "0";
-			Log.e("looking at bookmark", "hello");
+			String latestUpdate = zeroUpdate;
+			//Log.e("looking at bookmark", "hello");
 			int count = 0;
 			publishProgress(0, bookmarks.size());
 			for(Bookmark bm : bookmarks) {
-				Log.e("looking at bookmark", bm.article.title);
+				//Log.e("looking at bookmark", bm.article.title);
 				ContentValues values = new ContentValues();
 				if(bm.date_updated.compareTo(latestUpdate) > 0) {
 					latestUpdate = bm.date_updated.split(" ")[0];
@@ -567,12 +626,13 @@ public class MainMenu extends Activity {
 				values.put(ARTICLE_URL, bm.article.url);
 				values.put(ARTICLE_DOMAIN, bm.article.domain);
 				values.put(ARTICLE_TITLE, bm.article.title);
-				Log.e("ids", String.format("bookmark=%s || article=%s", bm.id, bm.article.id));
+				//Log.e("ids", String.format("bookmark=%s || article=%s", bm.id, bm.article.id));
 				String whereIDSame = BOOKMARK_ID + "=" + bm.id;
 				Cursor articleCursor = database.query(
 						ARTICLE_TABLE,
 						new String[] {MY_ID},
 						whereIDSame, null, null, null, null);
+				Log.e("count", articleCursor.getCount() + " " + bm.id);
 				if(articleCursor.getCount() > 0) {
 					database.update(ARTICLE_TABLE, values, whereIDSame, null);
 					Log.e("updated", bm.article.title);
@@ -581,17 +641,18 @@ public class MainMenu extends Activity {
 					try {
 						String html = parseHTML("https://readability.com/mobile/articles/"+bm.article.id);
 						values.put(ARTICLE_CONTENT, html);
+						database.insert(ARTICLE_TABLE, null, values);
+						Log.e("inserted", bm.article.title );
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
 				else {
 					values.put(ARTICLE_CONTENT, "");
+					database.insert(ARTICLE_TABLE, null, values);
+					Log.e("inserted", bm.article.title );
 				}
 
-
-				database.insert(ARTICLE_TABLE, null, values);
-				Log.e("inserted", bm.article.title );
 				count++;
 				publishProgress(count, bookmarks.size());
 			}

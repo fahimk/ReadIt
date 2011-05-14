@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import android.widget.TableLayout;
 
 public class EditPanel extends TableLayout {
-	private Paint innerPaint, borderPaint ;
+	private Paint innerPaint;
 
 	public EditPanel(Context context, AttributeSet attrs) {
 		super(context, attrs);
@@ -21,26 +21,19 @@ public class EditPanel extends TableLayout {
 	}
 	private void init() {
 		innerPaint = new Paint();
-		innerPaint.setARGB(225, 75, 75, 75); //gray
+		innerPaint.setARGB(225, 98, 96, 93); //gray
 		innerPaint.setAntiAlias(true);
-		borderPaint = new Paint();
-		borderPaint.setARGB(255, 255, 255, 255);
-		borderPaint.setAntiAlias(true);
-		borderPaint.setStyle(Style.STROKE);
-		borderPaint.setStrokeWidth(2);
 	}
 	public void setInnerPaint(Paint innerPaint) {
 		this.innerPaint = innerPaint;
 	}
-	public void setBorderPaint(Paint borderPaint) {
-		this.borderPaint = borderPaint;
-	}
+
 	@Override
 	protected void dispatchDraw(Canvas canvas) {
 
 		RectF drawRect = new RectF();
-		drawRect.set(0,0, getMeasuredWidth(), getMeasuredHeight());
-		canvas.drawRoundRect(drawRect, 5, 5, innerPaint);canvas.drawRoundRect(drawRect, 5, 5, borderPaint);
+		drawRect.set(0, 0, getMeasuredWidth(), getMeasuredHeight());
+		canvas.drawRect(drawRect, innerPaint);
 		super.dispatchDraw(canvas);
 	}
 }

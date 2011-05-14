@@ -29,7 +29,7 @@ public final class R {
         public static final int tab_text_selector=0x7f02000f;
     }
     public static final class id {
-        public static final int button_add=0x7f05000a;
+        public static final int button_add=0x7f050009;
         public static final int button_authorize=0x7f050010;
         public static final int button_bookmarks=0x7f050008;
         public static final int button_delete=0x7f05000f;
@@ -46,7 +46,7 @@ public final class R {
         public static final int button_login=0x7f050003;
         public static final int button_readnow=0x7f050006;
         public static final int button_settings=0x7f05000c;
-        public static final int button_sync=0x7f050009;
+        public static final int button_sync=0x7f05000a;
         public static final int edittext_url=0x7f050007;
         public static final int list_arch=0x7f050013;
         public static final int list_fav=0x7f050012;

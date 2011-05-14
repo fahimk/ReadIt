@@ -6,7 +6,7 @@
 		android:layout_height="fill_parent" />
 	<com.fahimk.readabilityclient.EditPanel
 		android:id="@+id/popup_window" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:gravity="top">
+		android:layout_height="wrap_content" android:layout_gravity="top" android:layout_margin="5dp" android:padding="3dp">
 		<TableRow>
 			<Button android:id="@+id/button_edit_prevsize"
 				android:layout_weight="1" android:layout_width="0dip"

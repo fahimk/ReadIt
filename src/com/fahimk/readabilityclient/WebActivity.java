@@ -33,7 +33,7 @@ public class WebActivity extends Activity {
 		this.getWindow().requestFeature(Window.FEATURE_PROGRESS);
 		setContentView(R.layout.web);
 		getWindow().setFeatureInt( Window.FEATURE_PROGRESS, Window.PROGRESS_VISIBILITY_ON);
-
+		setupCustomPanel();
 		webView = (WebView)this.findViewById(R.id.webView);
 
 		final Activity MyActivity = this;
@@ -112,6 +112,7 @@ public class WebActivity extends Activity {
 
 		}.start();
 	}
+	
 	private void setupCustomPanel() {
 		final EditPanel popup = (EditPanel) findViewById(R.id.popup_window);
 		popup.setVisibility(View.GONE);
@@ -165,7 +166,6 @@ public class WebActivity extends Activity {
 
 		@Override
 		public void onPageFinished(WebView view, String url){
-
 			view.loadUrl("javascript:(function() { " +  
 					"var readBar = document.getElementById('read-bar'); readBar.parentNode.removeChild(readBar);"+
 					"var footNote = document.getElementById('article-marketing'); footNote.parentNode.removeChild(footNote);"+
@@ -174,7 +174,6 @@ public class WebActivity extends Activity {
 			//need better algorithm for this based on number of words
 			//view.scrollTo(0, (int) (scrollPosition * view.getContentHeight() + view.getHeight()));
 			addButtonListeners(findViewById(R.id.mainFrame), webView);
-			setupCustomPanel();
 			setupDefaultTheme(webView);
 		} 
 
