@@ -6,34 +6,14 @@
 		android:layout_height="fill_parent" />
 	<com.fahimk.readabilityclient.EditPanel
 		android:id="@+id/popup_window" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:layout_gravity="top" android:layout_margin="5dp" android:padding="3dp">
-		<TableRow>
-			<Button android:id="@+id/button_edit_prevsize"
-				android:layout_weight="1" android:layout_width="0dip"
-				android:layout_height="wrap_content" android:text="A" />
-			<Button android:id="@+id/button_edit_nextsize"
-				android:layout_weight="1" android:layout_width="0dip"
-				android:layout_height="wrap_content" android:text="AA" />
-			<Button android:layout_weight="1" android:layout_width="0dip"
-				android:layout_height="wrap_content" android:visibility="invisible" />
-			<Button android:id="@+id/button_edit_prevwidth"
-				android:layout_weight="1" android:layout_width="0dip"
-				android:layout_height="wrap_content" android:text="w" />
-			<Button android:id="@+id/button_edit_nextwidth"
-				android:layout_weight="1" android:layout_width="0dip"
-				android:layout_height="wrap_content" android:text="W" />
-		</TableRow>
-		<TableRow>
+		android:layout_height="wrap_content" android:layout_gravity="top"
+		android:layout_margin="5dp" android:padding="3dp">
+		<TableRow android:gravity="center">
 			<Button android:id="@+id/button_edit_toggleimages"
 				android:layout_width="0dip" android:layout_weight="1"
 				android:layout_height="wrap_content" android:text="Images" />
 			<Button android:layout_weight="1" android:layout_width="0dip"
 				android:layout_height="wrap_content" android:visibility="invisible" />
-			<Button android:id="@+id/button_edit_togglelinks"
-				android:layout_weight="1" android:layout_width="0dip"
-				android:layout_height="wrap_content" android:text="Links" />
-		</TableRow>
-		<TableRow android:gravity="center">
 			<Button android:id="@+id/button_edit_prevtheme"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:text="&lt;&lt;" />
@@ -43,6 +23,41 @@
 			<Button android:id="@+id/button_edit_nexttheme"
 				android:layout_width="wrap_content" android:layout_height="wrap_content"
 				android:text="&gt;&gt;" />
+			<Button android:layout_weight="1" android:layout_width="0dip"
+				android:layout_height="wrap_content" android:visibility="invisible" />
+			<Button android:id="@+id/button_edit_togglelinks"
+				android:layout_weight="1" android:layout_width="0dip"
+				android:layout_height="wrap_content" android:text="Links" />
+		</TableRow>
+		<TableRow>
+			<TextView android:layout_weight="1" android:layout_width="0dip"
+				android:layout_height="wrap_content" android:visibility="invisible" />
+			<ImageButton android:id="@+id/button_edit_prevsize"
+				android:layout_weight="1" android:layout_width="0dp"
+				android:scaleType="centerInside" android:layout_height="50dp"
+				android:src="@drawable/panel_smalltext" />
+			<ImageButton android:id="@+id/button_edit_nextsize"
+				android:layout_weight="1" android:layout_width="0dp"
+				android:scaleType="centerInside" android:layout_height="50dp"
+				android:src="@drawable/panel_largetext" />
+			<TextView android:layout_weight="1" android:layout_width="0dip"
+				android:layout_height="wrap_content" android:visibility="invisible" />
+			<ImageButton android:id="@+id/button_edit_prevwidth"
+				android:layout_weight="1" android:layout_width="0dp"
+				android:scaleType="centerInside" android:layout_height="50dp"
+				android:src="@drawable/panel_thin" />
+			<ImageButton android:id="@+id/button_edit_nextwidth"
+				android:layout_weight="1" android:layout_width="0dp"
+				android:scaleType="centerInside" android:layout_height="50dp"
+				android:src="@drawable/panel_wide" />
+			<TextView android:layout_weight="1" android:layout_width="0dip"
+				android:layout_height="wrap_content" android:visibility="invisible" />
+		</TableRow>
+		<TableRow>
+			<ImageButton android:layout_gravity="bottom"
+				android:id="@+id/button_hidepanel" android:scaleType="centerInside"
+				android:layout_weight="1" android:layout_width="0dp"
+				android:layout_height="30dp" android:src="@drawable/panel_up" android:background="@drawable/custom_button" />
 		</TableRow>
 	</com.fahimk.readabilityclient.EditPanel>
 </FrameLayout>

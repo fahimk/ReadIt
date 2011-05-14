@@ -276,30 +276,6 @@ public class MainMenu extends Activity {
 		v.setColorFilter(null);
 	}
 
-	public void darkenImage(ImageView v) {
-		v.setColorFilter(0x55000000, PorterDuff.Mode.SRC_ATOP);
-	}
-
-	public void lightenImage(ImageView v) {
-		v.setColorFilter(0x99FFFFFF, PorterDuff.Mode.SRC_ATOP);
-	}
-
-	public void handleTouches(ImageView button) {
-		button.setOnTouchListener(new View.OnTouchListener() {
-
-			public boolean onTouch(View v, MotionEvent m) {
-				if(m.getAction() == MotionEvent.ACTION_DOWN) {
-					darkenImage((ImageView) v);
-				}
-				else if (m.getAction() == MotionEvent.ACTION_UP){
-					((ImageView) v).setColorFilter(null);
-				}
-				return false;
-			}
-		});
-
-	}
-
 	public boolean checkAuthorization() {
 		SharedPreferences tokenInfo = getBaseContext().getSharedPreferences(PREF_NAME, 0);
 		String token = tokenInfo.getString("oauth_token", null);

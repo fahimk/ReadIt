@@ -4,6 +4,7 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class JavascriptModifyFunctions {
@@ -25,18 +26,17 @@ public class JavascriptModifyFunctions {
 	static Button toggleImages;
 	static Button toggleLinks;
 
-	static Button smallerWidth;
-	static Button largerWidth;
+	static ImageView smallerWidth;
+	static ImageView largerWidth;
 
 	static Button previousTheme;
 	static Button nextTheme;
 	static TextView currentThemeText;
 
-	static Button smallerText;
-	static Button largerText;
+	static ImageView smallerText;
+	static ImageView largerText;
 
-
-
+	static Button hidePanel;
 
 
 
@@ -48,12 +48,12 @@ public class JavascriptModifyFunctions {
 		nextTheme = (Button) frameLayout.findViewById(R.id.button_edit_nexttheme);
 		currentThemeText = (TextView) frameLayout.findViewById(R.id.text_edit_currenttheme);
 
-		smallerText = (Button) frameLayout.findViewById(R.id.button_edit_prevsize);
-		largerText = (Button) frameLayout.findViewById(R.id.button_edit_nextsize);
+		smallerText = (ImageView) frameLayout.findViewById(R.id.button_edit_prevsize);
+		largerText = (ImageView) frameLayout.findViewById(R.id.button_edit_nextsize);
 
-		smallerWidth = (Button) frameLayout.findViewById(R.id.button_edit_prevwidth);
-		largerWidth = (Button) frameLayout.findViewById(R.id.button_edit_nextwidth);
-
+		smallerWidth = (ImageView) frameLayout.findViewById(R.id.button_edit_prevwidth);
+		largerWidth = (ImageView) frameLayout.findViewById(R.id.button_edit_nextwidth);		
+		
 		toggleImages.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				showImages = !showImages;

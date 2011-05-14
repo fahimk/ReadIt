@@ -1,10 +1,11 @@
 package com.fahimk.readabilityclient;
 
-import static com.fahimk.readabilityclient.JavascriptModifyFunctions.*;
-import static com.fahimk.readabilityclient.HelperMethods.*;
-
-import com.fahimk.readabilityclient.MainMenu.MessageHandler;
-
+import static com.fahimk.readabilityclient.HelperMethods.MSG_END;
+import static com.fahimk.readabilityclient.HelperMethods.MSG_FAIL;
+import static com.fahimk.readabilityclient.HelperMethods.displayAlert;
+import static com.fahimk.readabilityclient.HelperMethods.parseHTML;
+import static com.fahimk.readabilityclient.JavascriptModifyFunctions.addButtonListeners;
+import static com.fahimk.readabilityclient.JavascriptModifyFunctions.setupDefaultTheme;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -14,13 +15,16 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 
 public class WebActivity extends Activity {
 	private WebView webView;
@@ -113,39 +117,56 @@ public class WebActivity extends Activity {
 		}.start();
 	}
 	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.menu_authorized, menu);
+	    return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.menu_archive:
+	        return true;
+	    case R.id.menu_favorite:
+	        return true;
+	    case R.id.menu_styles:
+	    	showPanel();
+	    default:
+	        return false;
+	    }
+	}
+	
+	
 	private void setupCustomPanel() {
 		final EditPanel popup = (EditPanel) findViewById(R.id.popup_window);
 		popup.setVisibility(View.GONE);
-	}
-
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-		if(event.getAction() == KeyEvent.ACTION_DOWN)
-		{
-			switch(keyCode)
-			{
-			case KeyEvent.KEYCODE_MENU:
-				final EditPanel popup = (EditPanel) findViewById(R.id.popup_window);
-				if(key==0){
-					key=1;
-					popup.setVisibility(View.VISIBLE);
-					webView.setClickable(false);
-					popup.setClickable(true);
-				}
-				else if(key==1){
-					key=0;
-					popup.setVisibility(View.GONE);
-					webView.setClickable(true);
-					popup.setClickable(false);
-				}
-				return true;
+		
+		ImageView hidePanel = (ImageView) findViewById(R.id.button_hidepanel);
+		HelperMethods.handleTouches(hidePanel);
+		hidePanel.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				hidePanel();
 			}
-		}
-
-		return super.onKeyDown(keyCode, event);
+		});
+	}
+	
+	public void hidePanel() {
+		final EditPanel popup = (EditPanel) findViewById(R.id.popup_window);
+		popup.setVisibility(View.GONE);
+		webView.setClickable(true);
+		popup.setClickable(false);
 	}
 
+	public void showPanel() {
+		final EditPanel popup = (EditPanel) findViewById(R.id.popup_window);
+		popup.setVisibility(View.VISIBLE);
+		webView.setClickable(false);
+		popup.setClickable(true);
+	}
+	
 	private class CustomWebView extends WebViewClient {
 
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {

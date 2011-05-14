@@ -21,7 +21,11 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.PorterDuff;
 import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ImageView;
 
 public class HelperMethods {
 	public final static String PREF_NAME = "ReadabilityClient";
@@ -59,6 +63,29 @@ public class HelperMethods {
 	public static String getTimestamp() {
 		Calendar cal = Calendar.getInstance();
 		return Long.toString(cal.getTimeInMillis() / 1000);
+	}
+	
+	public static void darkenImage(ImageView v) {
+		v.setColorFilter(0x55000000, PorterDuff.Mode.SRC_ATOP);
+	}
+
+	public static void lightenImage(ImageView v) {
+		v.setColorFilter(0x99FFFFFF, PorterDuff.Mode.SRC_ATOP);
+	}
+
+	public static void handleTouches(ImageView button) {
+		button.setOnTouchListener(new View.OnTouchListener() {
+
+			public boolean onTouch(View v, MotionEvent m) {
+				if(m.getAction() == MotionEvent.ACTION_DOWN) {
+					darkenImage((ImageView) v);
+				}
+				else if (m.getAction() == MotionEvent.ACTION_UP){
+					((ImageView) v).setColorFilter(null);
+				}
+				return false;
+			}
+		});
 	}
 
 	public static InputStream getStream(String url) {

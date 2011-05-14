@@ -11,58 +11,70 @@ public final class R {
     public static final class attr {
     }
     public static final class drawable {
-        public static final int ic_launcher=0x7f020000;
-        public static final int icon=0x7f020001;
-        public static final int icon_add=0x7f020002;
-        public static final int icon_auth=0x7f020003;
-        public static final int icon_exit=0x7f020004;
-        public static final int icon_help=0x7f020005;
-        public static final int icon_read=0x7f020006;
-        public static final int icon_read2=0x7f020007;
-        public static final int icon_settings=0x7f020008;
-        public static final int icon_sync=0x7f020009;
-        public static final int logo=0x7f02000a;
-        public static final int tab_bg_selected=0x7f02000b;
-        public static final int tab_bg_selector=0x7f02000c;
-        public static final int tab_bg_unselected=0x7f02000d;
-        public static final int tab_divider=0x7f02000e;
-        public static final int tab_text_selector=0x7f02000f;
+        public static final int custom_button=0x7f020000;
+        public static final int ic_launcher=0x7f020001;
+        public static final int icon=0x7f020002;
+        public static final int icon_add=0x7f020003;
+        public static final int icon_auth=0x7f020004;
+        public static final int icon_exit=0x7f020005;
+        public static final int icon_help=0x7f020006;
+        public static final int icon_read=0x7f020007;
+        public static final int icon_read2=0x7f020008;
+        public static final int icon_settings=0x7f020009;
+        public static final int icon_sync=0x7f02000a;
+        public static final int logo=0x7f02000b;
+        public static final int panel_largetext=0x7f02000c;
+        public static final int panel_smalltext=0x7f02000d;
+        public static final int panel_thin=0x7f02000e;
+        public static final int panel_up=0x7f02000f;
+        public static final int panel_wide=0x7f020010;
+        public static final int tab_bg_selected=0x7f020011;
+        public static final int tab_bg_selector=0x7f020012;
+        public static final int tab_bg_unselected=0x7f020013;
+        public static final int tab_divider=0x7f020014;
+        public static final int tab_text_selector=0x7f020015;
     }
     public static final class id {
-        public static final int button_add=0x7f050009;
-        public static final int button_authorize=0x7f050010;
-        public static final int button_bookmarks=0x7f050008;
-        public static final int button_delete=0x7f05000f;
-        public static final int button_edit_nextsize=0x7f05001a;
-        public static final int button_edit_nexttheme=0x7f050021;
-        public static final int button_edit_nextwidth=0x7f05001c;
-        public static final int button_edit_prevsize=0x7f050019;
-        public static final int button_edit_prevtheme=0x7f05001f;
-        public static final int button_edit_prevwidth=0x7f05001b;
-        public static final int button_edit_toggleimages=0x7f05001d;
-        public static final int button_edit_togglelinks=0x7f05001e;
-        public static final int button_exit=0x7f05000e;
-        public static final int button_help=0x7f05000b;
-        public static final int button_login=0x7f050003;
-        public static final int button_readnow=0x7f050006;
-        public static final int button_settings=0x7f05000c;
-        public static final int button_sync=0x7f05000a;
-        public static final int edittext_url=0x7f050007;
-        public static final int list_arch=0x7f050013;
-        public static final int list_fav=0x7f050012;
-        public static final int list_read=0x7f050011;
-        public static final int listitem_content=0x7f050002;
-        public static final int listitem_domain=0x7f050000;
-        public static final int listitem_title=0x7f050001;
-        public static final int mainFrame=0x7f050016;
-        public static final int popup_window=0x7f050018;
-        public static final int searchButton=0x7f050004;
-        public static final int searchText=0x7f050005;
-        public static final int tabsLayout=0x7f050014;
-        public static final int tabsText=0x7f050015;
-        public static final int text_edit_currenttheme=0x7f050020;
-        public static final int text_settings=0x7f05000d;
-        public static final int webView=0x7f050017;
+        public static final int button_add=0x7f060009;
+        public static final int button_authorize=0x7f060010;
+        public static final int button_bookmarks=0x7f060008;
+        public static final int button_delete=0x7f06000f;
+        public static final int button_edit_nextsize=0x7f06001f;
+        public static final int button_edit_nexttheme=0x7f06001c;
+        public static final int button_edit_nextwidth=0x7f060021;
+        public static final int button_edit_prevsize=0x7f06001e;
+        public static final int button_edit_prevtheme=0x7f06001a;
+        public static final int button_edit_prevwidth=0x7f060020;
+        public static final int button_edit_toggleimages=0x7f060019;
+        public static final int button_edit_togglelinks=0x7f06001d;
+        public static final int button_exit=0x7f06000e;
+        public static final int button_help=0x7f06000b;
+        public static final int button_hidepanel=0x7f060022;
+        public static final int button_login=0x7f060003;
+        public static final int button_readnow=0x7f060006;
+        public static final int button_settings=0x7f06000c;
+        public static final int button_sync=0x7f06000a;
+        public static final int edittext_url=0x7f060007;
+        public static final int list_arch=0x7f060013;
+        public static final int list_fav=0x7f060012;
+        public static final int list_read=0x7f060011;
+        public static final int listitem_content=0x7f060002;
+        public static final int listitem_domain=0x7f060000;
+        public static final int listitem_title=0x7f060001;
+        public static final int mainFrame=0x7f060016;
+        public static final int menu_archive=0x7f060024;
+        public static final int menu_favorite=0x7f060023;
+        public static final int menu_readlater=0x7f060027;
+        public static final int menu_share=0x7f060026;
+        public static final int menu_styles=0x7f060025;
+        public static final int popup_window=0x7f060018;
+        public static final int searchButton=0x7f060004;
+        public static final int searchText=0x7f060005;
+        public static final int tabsLayout=0x7f060014;
+        public static final int tabsText=0x7f060015;
+        public static final int text_edit_currenttheme=0x7f06001b;
+        public static final int text_settings=0x7f06000d;
+        public static final int webView=0x7f060017;
     }
     public static final class layout {
         public static final int list_item=0x7f030000;
@@ -71,6 +83,10 @@ public final class R {
         public static final int reading_list=0x7f030003;
         public static final int tabs_bg=0x7f030004;
         public static final int web=0x7f030005;
+    }
+    public static final class menu {
+        public static final int menu_authorized=0x7f050000;
+        public static final int menu_guest=0x7f050001;
     }
     public static final class string {
         public static final int app_name=0x7f040000;
