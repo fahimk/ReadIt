@@ -5,59 +5,61 @@
 	<WebView android:id="@+id/webView" android:layout_width="fill_parent"
 		android:layout_height="fill_parent" />
 	<com.fahimk.readabilityclient.EditPanel
-		android:id="@+id/popup_window" android:layout_width="fill_parent"
-		android:layout_height="wrap_content" android:layout_gravity="top"
-		android:layout_margin="5dp" android:padding="3dp">
-		<TableRow android:gravity="center">
-			<Button android:id="@+id/button_edit_toggleimages"
-				android:layout_width="0dip" android:layout_weight="1"
-				android:layout_height="wrap_content" android:text="Images" />
-			<Button android:layout_weight="1" android:layout_width="0dip"
-				android:layout_height="wrap_content" android:visibility="invisible" />
-			<Button android:id="@+id/button_edit_prevtheme"
-				android:layout_width="wrap_content" android:layout_height="wrap_content"
-				android:text="&lt;&lt;" />
-			<TextView android:id="@+id/text_edit_currenttheme"
-				android:text="Newspaper" android:gravity="center"
+		android:id="@+id/popup_window" android:orientation="vertical"
+		android:layout_width="fill_parent" android:layout_height="wrap_content">
+		<RelativeLayout android:gravity="center" android:padding="5dp"
+			android:layout_width="fill_parent" android:layout_height="wrap_content">
+			<ImageButton android:padding="5dp" android:id="@+id/button_edit_toggleimages" android:layout_alignParentLeft="true"
+				android:layout_width="wrap_content"
+				android:layout_height="50dp" android:background="@drawable/custom_button"
+				android:scaleType="centerInside" android:src="@drawable/panel_imageshow" />
+			<TextView android:layout_width="50dp" android:layout_height="50dp"
+				android:visibility="invisible" />
+			<Button android:textSize="15sp" android:id="@+id/button_edit_prevtheme" android:layout_toLeftOf="@+id/text_edit_currenttheme"
+				android:layout_width="wrap_content"
+				android:textColor="#FFFFFFFF" android:layout_height="50dp" android:background="@drawable/custom_button"
+				android:text="  &lt;&lt;  " />
+			<TextView android:textColor="#FFFFFFFF" android:id="@id/text_edit_currenttheme"  android:layout_centerInParent="true"
+				android:text="Newspaper" android:gravity="center" android:textSize="15sp"
+				android:layout_width="100sp"
 				android:layout_height="wrap_content" />
-			<Button android:id="@+id/button_edit_nexttheme"
-				android:layout_width="wrap_content" android:layout_height="wrap_content"
-				android:text="&gt;&gt;" />
-			<Button android:layout_weight="1" android:layout_width="0dip"
-				android:layout_height="wrap_content" android:visibility="invisible" />
-			<Button android:id="@+id/button_edit_togglelinks"
-				android:layout_weight="1" android:layout_width="0dip"
-				android:layout_height="wrap_content" android:text="Links" />
-		</TableRow>
-		<TableRow>
-			<TextView android:layout_weight="1" android:layout_width="0dip"
-				android:layout_height="wrap_content" android:visibility="invisible" />
+			<Button android:textSize="15sp" android:id="@+id/button_edit_nexttheme" android:layout_toRightOf="@id/text_edit_currenttheme"
+				android:layout_width="wrap_content"
+				android:textColor="#FFFFFFFF" android:layout_height="50dp" android:background="@drawable/custom_button"
+				android:text="  &gt;&gt;  " />
+			<ImageButton android:padding="5dp" android:id="@+id/button_edit_togglelinks"
+				android:layout_width="wrap_content" android:layout_alignParentRight="true"
+				android:layout_height="50dp" android:background="@drawable/custom_button"
+				android:scaleType="centerInside" android:src="@drawable/panel_linkshow" />
+		</RelativeLayout>
+		<LinearLayout android:padding="5dp" orientation="horizontal"
+			android:layout_width="fill_parent" android:layout_height="wrap_content">
 			<ImageButton android:id="@+id/button_edit_prevsize"
-				android:layout_weight="1" android:layout_width="0dp"
+				android:layout_weight="1" android:layout_width="fill_parent"
 				android:scaleType="centerInside" android:layout_height="50dp"
-				android:src="@drawable/panel_smalltext" />
+				android:background="@drawable/custom_button" android:src="@drawable/panel_smalltext" />
 			<ImageButton android:id="@+id/button_edit_nextsize"
-				android:layout_weight="1" android:layout_width="0dp"
+				android:layout_weight="1" android:layout_width="fill_parent"
 				android:scaleType="centerInside" android:layout_height="50dp"
-				android:src="@drawable/panel_largetext" />
-			<TextView android:layout_weight="1" android:layout_width="0dip"
-				android:layout_height="wrap_content" android:visibility="invisible" />
+				android:background="@drawable/custom_button" android:src="@drawable/panel_largetext" />
+			<TextView android:layout_width="50dp" android:layout_height="50dp"
+				android:visibility="invisible" />
 			<ImageButton android:id="@+id/button_edit_prevwidth"
-				android:layout_weight="1" android:layout_width="0dp"
+				android:layout_weight="1" android:layout_width="fill_parent"
 				android:scaleType="centerInside" android:layout_height="50dp"
-				android:src="@drawable/panel_thin" />
+				android:background="@drawable/custom_button" android:src="@drawable/panel_thin" />
 			<ImageButton android:id="@+id/button_edit_nextwidth"
-				android:layout_weight="1" android:layout_width="0dp"
+				android:layout_weight="1" android:layout_width="fill_parent"
 				android:scaleType="centerInside" android:layout_height="50dp"
-				android:src="@drawable/panel_wide" />
-			<TextView android:layout_weight="1" android:layout_width="0dip"
-				android:layout_height="wrap_content" android:visibility="invisible" />
-		</TableRow>
-		<TableRow>
+				android:background="@drawable/custom_button" android:src="@drawable/panel_wide" />
+		</LinearLayout>
+		<LinearLayout orientation="horizontal"
+			android:layout_width="fill_parent" android:paddingTop="10dp"
+			android:layout_height="wrap_content">
 			<ImageButton android:layout_gravity="bottom"
 				android:id="@+id/button_hidepanel" android:scaleType="centerInside"
-				android:layout_weight="1" android:layout_width="0dp"
-				android:layout_height="30dp" android:src="@drawable/panel_up" android:background="@drawable/custom_button" />
-		</TableRow>
+				android:layout_width="fill_parent" android:layout_height="30dp"
+				android:src="@drawable/panel_up" android:background="@drawable/custom_button" />
+		</LinearLayout>
 	</com.fahimk.readabilityclient.EditPanel>
 </FrameLayout>

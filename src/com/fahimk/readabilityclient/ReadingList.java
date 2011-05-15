@@ -55,7 +55,12 @@ public class ReadingList extends TabActivity {
 		setupLists();
 		setupTabs();
 	}
-
+	
+	public void onResume() {
+		super.onResume();
+		setupLists();
+	}
+	
 	public void setupDB() {
 		ArticlesSQLiteOpenHelper helper = new ArticlesSQLiteOpenHelper(this);
 		database = helper.getWritableDatabase();
@@ -114,10 +119,13 @@ public class ReadingList extends TabActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
 				Intent i = new Intent(getBaseContext(), WebActivity.class);
-				//i.putExtra("article_content", readArticleContent.get(position));
-				i.putExtra("local", true);
+				i.putExtra("saved", true);
 				i.putExtra("article_content", readArticlesInfo.get(position).content);
-				//i.putExtra("scroll_position", readArticleScroll.get(position));
+				i.putExtra("archive", "0");
+				i.putExtra("article_url", readArticlesInfo.get(position).id);
+				i.putExtra("full_url", readArticlesInfo.get(position).url);
+				i.putExtra("favorite", readArticlesInfo.get(position).favorite);
+				i.putExtra("bookmark_id", readArticlesInfo.get(position).bookmark_id);
 				startActivity(i);
 			}
 		});
@@ -127,10 +135,13 @@ public class ReadingList extends TabActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
 				Intent i = new Intent(getBaseContext(), WebActivity.class);
-				//i.putExtra("article_content", favArticleContent.get(position));
-				i.putExtra("local", true);
-				i.putExtra("article_content", readArticlesInfo.get(position).content);
-				//i.putExtra("scroll_position", favArticleScroll.get(position));
+				i.putExtra("saved", true);
+				i.putExtra("favorite", "1");
+				i.putExtra("archive", favArticlesInfo.get(position).archive);
+				i.putExtra("article_url", favArticlesInfo.get(position).id);
+				i.putExtra("article_content", favArticlesInfo.get(position).content);
+				i.putExtra("full_url", favArticlesInfo.get(position).url);
+				i.putExtra("bookmark_id", favArticlesInfo.get(position).bookmark_id);
 				startActivity(i);
 			}
 		});
@@ -140,10 +151,11 @@ public class ReadingList extends TabActivity {
 			public void onItemClick(AdapterView<?> parent, View view, int position,
 					long id) {
 				Intent i = new Intent(getBaseContext(), WebActivity.class);
-				//i.putExtra("article_url", arcArticleUrls.get(position));
-				i.putExtra("local", false);
-				i.putExtra("article_url", readArticlesInfo.get(position).id);
-				//i.putExtra("scroll_position", arcArticleScroll.get(position));
+				i.putExtra("saved", true);
+				i.putExtra("archive", "1");
+				i.putExtra("article_url", arcArticlesInfo.get(position).id);
+				i.putExtra("full_url", arcArticlesInfo.get(position).url);
+				i.putExtra("bookmark_id", arcArticlesInfo.get(position).bookmark_id);
 				startActivity(i);
 			}
 		});
@@ -153,7 +165,7 @@ public class ReadingList extends TabActivity {
 	public ReadingListAdapter getAdapterQuery(String filter, ArrayList<Article> articleInfo) {
 		Log.e("getAdapterQuery", "running query");
 		//String url, String domain, String id, String title, String content
-		String[] getStrColumns = new String[] {ARTICLE_URL, ARTICLE_DOMAIN, ARTICLE_ID, ARTICLE_TITLE, ARTICLE_CONTENT};
+		String[] getStrColumns = new String[] {ARTICLE_URL, ARTICLE_DOMAIN, ARTICLE_ID, ARTICLE_TITLE, ARTICLE_CONTENT, BOOKMARK_ID, FAVORITE, ARCHIVE};
 		Cursor ac = database.query(
 				ARTICLE_TABLE,
 				getStrColumns,
@@ -161,7 +173,7 @@ public class ReadingList extends TabActivity {
 		ac.moveToFirst();
 		if(!ac.isAfterLast()) {
 			do {
-				Article tempArticle = new Article(ac.getString(0),ac.getString(1),ac.getString(2),ac.getString(3),ac.getString(4));
+				Article tempArticle = new Article(ac.getString(0),ac.getString(1),ac.getString(2),ac.getString(3),ac.getString(4), ac.getString(5), ac.getString(6), ac.getString(7));
 				articleInfo.add(tempArticle);
 			} while (ac.moveToNext());
 		}

@@ -4,11 +4,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.graphics.Paint.Style;
 import android.util.AttributeSet;
-import android.widget.TableLayout;
+import android.widget.LinearLayout;
 
-public class EditPanel extends TableLayout {
+public class EditPanel extends LinearLayout {
 	private Paint innerPaint;
 
 	public EditPanel(Context context, AttributeSet attrs) {
@@ -21,7 +20,7 @@ public class EditPanel extends TableLayout {
 	}
 	private void init() {
 		innerPaint = new Paint();
-		innerPaint.setARGB(225, 98, 96, 93); //gray
+		innerPaint.setARGB(225, 15, 15, 15); //gray
 		innerPaint.setAntiAlias(true);
 	}
 	public void setInnerPaint(Paint innerPaint) {

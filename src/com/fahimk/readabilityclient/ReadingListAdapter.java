@@ -52,12 +52,15 @@ public class ReadingListAdapter extends BaseAdapter {
 
 		TextView tvContent = (TextView) convertView.findViewById(R.id.listitem_content);
 		String content = entry.content;
-		if(content != null) {
+		if(entry.archive.equals("1")) {
+			tvContent.setText("");
+		}
+		else if(content != null) {
 			int indexOfStart = content.indexOf("<div class=\"post_body\">");
 			String removeTop = content.substring(indexOfStart == -1 ? 0 : indexOfStart);
 			Matcher m = Pattern.compile("<.+?>").matcher(removeTop);
 			String strippedContent = m.replaceAll("");
-			tvContent.setText(strippedContent.trim().substring(0, Math.min(90, strippedContent.length())) + ((strippedContent == "") ? "" : "..." ));
+			tvContent.setText(strippedContent.trim().substring(0, Math.min(90, strippedContent.length())).trim() + ((strippedContent == "") ? "" : "..." ));
 		}
 		return convertView;
 	}

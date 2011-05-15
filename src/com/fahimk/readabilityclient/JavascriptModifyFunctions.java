@@ -4,7 +4,7 @@ import android.util.Log;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.ImageView;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 public class JavascriptModifyFunctions {
@@ -23,41 +23,43 @@ public class JavascriptModifyFunctions {
     
 	static String[] editNames = {"col", "size", "style"};
 
-	static Button toggleImages;
-	static Button toggleLinks;
+	static ImageButton toggleImages;
+	static ImageButton toggleLinks;
 
-	static ImageView smallerWidth;
-	static ImageView largerWidth;
+	static ImageButton smallerWidth;
+	static ImageButton largerWidth;
 
 	static Button previousTheme;
 	static Button nextTheme;
 	static TextView currentThemeText;
 
-	static ImageView smallerText;
-	static ImageView largerText;
+	static ImageButton smallerText;
+	static ImageButton largerText;
 
 	static Button hidePanel;
+	static View frameLayout;
 
 
-
-	public static void addButtonListeners(View frameLayout, final WebView webView) {
-		toggleImages = (Button) frameLayout.findViewById(R.id.button_edit_toggleimages);
-		toggleLinks = (Button) frameLayout.findViewById(R.id.button_edit_togglelinks);
+	public static void addButtonListeners(View frameLayout2, final WebView webView) {
+		frameLayout = frameLayout2;
+		toggleImages = (ImageButton) frameLayout.findViewById(R.id.button_edit_toggleimages);
+		toggleLinks = (ImageButton) frameLayout.findViewById(R.id.button_edit_togglelinks);
 
 		previousTheme = (Button) frameLayout.findViewById(R.id.button_edit_prevtheme);
 		nextTheme = (Button) frameLayout.findViewById(R.id.button_edit_nexttheme);
 		currentThemeText = (TextView) frameLayout.findViewById(R.id.text_edit_currenttheme);
 
-		smallerText = (ImageView) frameLayout.findViewById(R.id.button_edit_prevsize);
-		largerText = (ImageView) frameLayout.findViewById(R.id.button_edit_nextsize);
+		smallerText = (ImageButton) frameLayout.findViewById(R.id.button_edit_prevsize);
+		largerText = (ImageButton) frameLayout.findViewById(R.id.button_edit_nextsize);
 
-		smallerWidth = (ImageView) frameLayout.findViewById(R.id.button_edit_prevwidth);
-		largerWidth = (ImageView) frameLayout.findViewById(R.id.button_edit_nextwidth);		
+		smallerWidth = (ImageButton) frameLayout.findViewById(R.id.button_edit_prevwidth);
+		largerWidth = (ImageButton) frameLayout.findViewById(R.id.button_edit_nextwidth);		
 		
 		toggleImages.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				showImages = !showImages;
 				displayImages(webView);
+				correctImageButton();
 			}
 		});
 
@@ -65,6 +67,7 @@ public class JavascriptModifyFunctions {
 			public void onClick(View v) {
 				showLinks = !showLinks;
 				displayLinks(webView);
+				correctLinkButton();
 			}
 		});
 
@@ -183,6 +186,28 @@ public class JavascriptModifyFunctions {
 		toggleButtons(TYPE_COL);
 		displayImages(webView);	
 		displayLinks(webView);
+		correctImageButton();
+		correctLinkButton();
+	}
+
+	private static void correctImageButton() {
+		if(showImages) {
+			toggleImages.setImageResource(R.drawable.panel_imageshow);
+		}
+		else {
+			toggleImages.setImageResource(R.drawable.panel_imagehide);
+		}
+		//frameLayout.invalidate();
+	}
+
+	private static void correctLinkButton() {
+		if(showLinks) {
+			toggleLinks.setImageResource(R.drawable.panel_linkshow);
+		}
+		else {
+			toggleLinks.setImageResource(R.drawable.panel_linkhide);
+		}
+		//frameLayout.invalidate();
 	}
 
 	public static void setTheme(WebView webView, int type, int value) {

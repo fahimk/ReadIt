@@ -1,5 +1,7 @@
 package com.fahimk.readabilityclient;
 
+import static com.fahimk.readabilityclient.HelperMethods.PREF_NAME;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,6 +23,8 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.PorterDuff;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -46,7 +50,20 @@ public class HelperMethods {
 	public final static int MSG_START_SETUPVIEWS = 3;
 	public final static int MSG_START_WEBVIEWINTENT = 4;
 	public final static int MSG_START_SYNCARTICLES = 5;
+	
+	public final static int MSG_WV_INIT = 6;
+	public final static int MSG_WV_ADDFAV = 7;
+	public final static int MSG_WV_ADDARC = 8;
 
+
+	public final static String zeroUpdate = "2011-01-01 00:00:00";
+	
+	public static SQLiteDatabase setupDB(Context c) {
+		ArticlesSQLiteOpenHelper helper = new ArticlesSQLiteOpenHelper(c);
+		return helper.getWritableDatabase();
+		//database.delete(ARTICLE_TABLE, null, null);
+	}
+	
 	public static String requestApiUrl(String page, String apiSecret, String extras) {
 		String url = String.format(URL_API + "%s?&oauth_nonce=%s&oauth_timestamp=%s" + 
 				"&oauth_consumer_key=%s&oauth_signature=%s&oauth_signature_method=PLAINTEXT" +
@@ -71,6 +88,14 @@ public class HelperMethods {
 
 	public static void lightenImage(ImageView v) {
 		v.setColorFilter(0x99FFFFFF, PorterDuff.Mode.SRC_ATOP);
+	}
+	
+	public static boolean checkAuthorization(Context context) {
+		SharedPreferences tokenInfo = context.getSharedPreferences(PREF_NAME, 0);
+		String token = tokenInfo.getString("oauth_token", null);
+		String tokenSecret = tokenInfo.getString("oauth_token_secret", null);
+		String verifier = tokenInfo.getString("oauth_verifier", null);
+		return (token != null && tokenSecret != null && verifier != null);
 	}
 
 	public static void handleTouches(ImageView button) {
@@ -127,6 +152,7 @@ public class HelperMethods {
 			str.append(line);
 		}
 		in.close();
+		Log.e("post str", str + " abc");
 		return str.toString();
 	}
 	

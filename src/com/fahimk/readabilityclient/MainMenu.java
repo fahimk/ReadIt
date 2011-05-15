@@ -77,21 +77,14 @@ import com.google.gson.Gson;
 public class MainMenu extends Activity {
 
 	private SQLiteDatabase database;
-	private String zeroUpdate = "2011-01-01 00:00:00";
 
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_menu);
-		setupDB();
+		database = setupDB(this);
 		setupViews();
-	}
-
-	public void setupDB() {
-		ArticlesSQLiteOpenHelper helper = new ArticlesSQLiteOpenHelper(this);
-		database = helper.getWritableDatabase();
-		//database.delete(ARTICLE_TABLE, null, null);
 	}
 
 	public void onDestroy() {
@@ -100,7 +93,7 @@ public class MainMenu extends Activity {
 	}
 
 	public void setupViews() {
-		boolean authorized = checkAuthorization();
+		boolean authorized = checkAuthorization(this);
 		Log.e("authorization", "is " + authorized);
 		Button authorizeButton = (Button) findViewById(R.id.button_authorize);
 		Button deleteButton = (Button) findViewById(R.id.button_delete);
@@ -267,21 +260,13 @@ public class MainMenu extends Activity {
 		if(visitUrl != "") {
 			Intent i = new Intent(getBaseContext(), WebActivity.class);
 			i.putExtra("article_url", visitUrl);
-			i.putExtra("local", false);
+			i.putExtra("saved", false);
 			startActivity(i);
 		}
 	}
 
 	public void removeImageEffects(ImageView v) {
 		v.setColorFilter(null);
-	}
-
-	public boolean checkAuthorization() {
-		SharedPreferences tokenInfo = getBaseContext().getSharedPreferences(PREF_NAME, 0);
-		String token = tokenInfo.getString("oauth_token", null);
-		String tokenSecret = tokenInfo.getString("oauth_token_secret", null);
-		String verifier = tokenInfo.getString("oauth_verifier", null);
-		return (token != null && tokenSecret != null && verifier != null);
 	}
 
 	public void authorize() {
@@ -336,7 +321,7 @@ public class MainMenu extends Activity {
 		setupViews();
 		final Uri uri = getIntent().getData();
 		if (uri != null && uri.toString().startsWith(URL_CALLBACK)) {
-			if(checkAuthorization()) {
+			if(checkAuthorization(this)) {
 				return;
 			}
 			ProgressDialog pDialog = HelperMethods.createProgressDialog(MainMenu.this, "Loading", "confirming authorization...");
@@ -528,7 +513,7 @@ public class MainMenu extends Activity {
 
 	}
 
-	private class SyncArticles extends AsyncTask<Void, Integer, Boolean> {
+	public class SyncArticles extends AsyncTask<Void, Integer, Boolean> {
 		ProgressDialog progressDialog;
 		ProgressDialog tempDialog;
 		String oauthToken;
@@ -538,7 +523,7 @@ public class MainMenu extends Activity {
 		String previousUpdate;
 
 		protected void onPreExecute() {
-			preferences = getBaseContext().getSharedPreferences(PREF_NAME, 0);
+			preferences = getSharedPreferences(PREF_NAME, 0);
 			oauthToken = preferences.getString("oauth_token", null); 
 			oauthTokenSecret = preferences.getString("oauth_token_secret", null);
 			oauthVerifier = preferences.getString("oauth_verifier", null);
