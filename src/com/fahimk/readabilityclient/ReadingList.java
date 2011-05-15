@@ -126,6 +126,7 @@ public class ReadingList extends TabActivity {
 				i.putExtra("full_url", readArticlesInfo.get(position).url);
 				i.putExtra("favorite", readArticlesInfo.get(position).favorite);
 				i.putExtra("bookmark_id", readArticlesInfo.get(position).bookmark_id);
+				i.putExtra("article_title", readArticlesInfo.get(position).title);
 				startActivity(i);
 			}
 		});
@@ -142,6 +143,7 @@ public class ReadingList extends TabActivity {
 				i.putExtra("article_content", favArticlesInfo.get(position).content);
 				i.putExtra("full_url", favArticlesInfo.get(position).url);
 				i.putExtra("bookmark_id", favArticlesInfo.get(position).bookmark_id);
+				i.putExtra("article_title", readArticlesInfo.get(position).title);
 				startActivity(i);
 			}
 		});
@@ -156,6 +158,7 @@ public class ReadingList extends TabActivity {
 				i.putExtra("article_url", arcArticlesInfo.get(position).id);
 				i.putExtra("full_url", arcArticlesInfo.get(position).url);
 				i.putExtra("bookmark_id", arcArticlesInfo.get(position).bookmark_id);
+				i.putExtra("article_title", readArticlesInfo.get(position).title);
 				startActivity(i);
 			}
 		});

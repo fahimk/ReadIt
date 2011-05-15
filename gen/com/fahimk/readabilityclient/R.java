@@ -21,25 +21,27 @@ public final class R {
         public static final int icon_read=0x7f020007;
         public static final int icon_read2=0x7f020008;
         public static final int icon_settings=0x7f020009;
-        public static final int icon_sync=0x7f02000a;
-        public static final int logo=0x7f02000b;
-        public static final int panel_imagehide=0x7f02000c;
-        public static final int panel_imageshow=0x7f02000d;
-        public static final int panel_largetext=0x7f02000e;
-        public static final int panel_linkhide=0x7f02000f;
-        public static final int panel_linkshow=0x7f020010;
-        public static final int panel_smalltext=0x7f020011;
-        public static final int panel_thin=0x7f020012;
-        public static final int panel_up=0x7f020013;
-        public static final int panel_wide=0x7f020014;
-        public static final int share_facebook=0x7f020015;
-        public static final int share_mail=0x7f020016;
-        public static final int share_twitter=0x7f020017;
-        public static final int tab_bg_selected=0x7f020018;
-        public static final int tab_bg_selector=0x7f020019;
-        public static final int tab_bg_unselected=0x7f02001a;
-        public static final int tab_divider=0x7f02001b;
-        public static final int tab_text_selector=0x7f02001c;
+        public static final int icon_share=0x7f02000a;
+        public static final int icon_style=0x7f02000b;
+        public static final int icon_sync=0x7f02000c;
+        public static final int logo=0x7f02000d;
+        public static final int panel_imagehide=0x7f02000e;
+        public static final int panel_imageshow=0x7f02000f;
+        public static final int panel_largetext=0x7f020010;
+        public static final int panel_linkhide=0x7f020011;
+        public static final int panel_linkshow=0x7f020012;
+        public static final int panel_smalltext=0x7f020013;
+        public static final int panel_thin=0x7f020014;
+        public static final int panel_up=0x7f020015;
+        public static final int panel_wide=0x7f020016;
+        public static final int share_facebook=0x7f020017;
+        public static final int share_mail=0x7f020018;
+        public static final int share_twitter=0x7f020019;
+        public static final int tab_bg_selected=0x7f02001a;
+        public static final int tab_bg_selector=0x7f02001b;
+        public static final int tab_bg_unselected=0x7f02001c;
+        public static final int tab_divider=0x7f02001d;
+        public static final int tab_text_selector=0x7f02001e;
     }
     public static final class id {
         public static final int button_add=0x7f06000c;
@@ -91,9 +93,10 @@ public final class R {
         public static final int list_item=0x7f030001;
         public static final int login=0x7f030002;
         public static final int main_menu=0x7f030003;
-        public static final int reading_list=0x7f030004;
-        public static final int tabs_bg=0x7f030005;
-        public static final int web=0x7f030006;
+        public static final int preferences=0x7f030004;
+        public static final int reading_list=0x7f030005;
+        public static final int tabs_bg=0x7f030006;
+        public static final int web=0x7f030007;
     }
     public static final class menu {
         public static final int menu_authorized=0x7f050000;

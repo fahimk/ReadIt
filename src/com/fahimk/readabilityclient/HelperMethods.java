@@ -50,10 +50,11 @@ public class HelperMethods {
 	public final static int MSG_START_SETUPVIEWS = 3;
 	public final static int MSG_START_WEBVIEWINTENT = 4;
 	public final static int MSG_START_SYNCARTICLES = 5;
+	public final static int MSG_BAD_URL = 6;
 	
-	public final static int MSG_WV_INIT = 6;
-	public final static int MSG_WV_ADDFAV = 7;
-	public final static int MSG_WV_ADDARC = 8;
+	public final static int MSG_WV_INIT = 7;
+	public final static int MSG_WV_ADDFAV = 8;
+	public final static int MSG_WV_ADDARC = 9;
 
 
 	public final static String zeroUpdate = "2011-01-01 00:00:00";
@@ -185,6 +186,18 @@ public class HelperMethods {
 		alertDialog.setTitle(title);
 		alertDialog.setMessage(message);
 		alertDialog.setIcon(android.R.drawable.ic_dialog_alert);
+		alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int which) {
+				return;
+			} }); 
+		alertDialog.show();
+	}
+	
+	public static void displayInfo(Context context, String title, String message) {
+		AlertDialog alertDialog = new AlertDialog.Builder(context).create();
+		alertDialog.setTitle(title);
+		alertDialog.setMessage(message);
+		alertDialog.setIcon(android.R.drawable.ic_dialog_info);
 		alertDialog.setButton("OK", new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
 				return;

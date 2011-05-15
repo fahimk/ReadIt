@@ -5,7 +5,7 @@
 	<item android:id="@+id/menu_archive"
 		android:title="archive" />
 	<item android:id="@+id/menu_styles" 
-		android:title="styles" />
+		android:title="styles" android:icon="@drawable/icon_style" />
 	<item android:id="@+id/menu_share"
-		android:title="share" />
+		android:title="share" android:icon="@drawable/icon_share" />
 </menu>

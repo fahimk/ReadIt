@@ -15,24 +15,35 @@ import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.DATE_UPDATED
 import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.FAVORITE;
 import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.MY_ID;
 import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.READ_PERCENT;
-import static com.fahimk.readabilityclient.HelperMethods.*;
+import static com.fahimk.readabilityclient.HelperMethods.API_SECRET;
+import static com.fahimk.readabilityclient.HelperMethods.MSG_BAD_URL;
+import static com.fahimk.readabilityclient.HelperMethods.MSG_END;
+import static com.fahimk.readabilityclient.HelperMethods.MSG_FAIL;
+import static com.fahimk.readabilityclient.HelperMethods.MSG_START_SYNCARTICLES;
+import static com.fahimk.readabilityclient.HelperMethods.MSG_WV_ADDARC;
+import static com.fahimk.readabilityclient.HelperMethods.MSG_WV_ADDFAV;
+import static com.fahimk.readabilityclient.HelperMethods.MSG_WV_INIT;
+import static com.fahimk.readabilityclient.HelperMethods.PREF_NAME;
+import static com.fahimk.readabilityclient.HelperMethods.checkAuthorization;
+import static com.fahimk.readabilityclient.HelperMethods.displayAlert;
+import static com.fahimk.readabilityclient.HelperMethods.getStream;
+import static com.fahimk.readabilityclient.HelperMethods.parseHTML;
+import static com.fahimk.readabilityclient.HelperMethods.requestApiUrl;
+import static com.fahimk.readabilityclient.HelperMethods.setupDB;
+import static com.fahimk.readabilityclient.HelperMethods.zeroUpdate;
 import static com.fahimk.readabilityclient.JavascriptModifyFunctions.addButtonListeners;
 import static com.fahimk.readabilityclient.JavascriptModifyFunctions.setupDefaultTheme;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-
-import com.fahimk.jsonobjects.Bookmark;
-import com.fahimk.jsonobjects.SearchBookmarks;
-import com.fahimk.readabilityclient.MainMenu.MessageHandler;
-import com.fahimk.readabilityclient.MainMenu.SyncArticles;
-import com.google.gson.Gson;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -60,9 +71,16 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.fahimk.jsonobjects.Bookmark;
+import com.fahimk.jsonobjects.SearchBookmarks;
+import com.fahimk.readabilityclient.MainMenu.MessageHandler;
+import com.fahimk.readabilityclient.MainMenu.SyncArticles;
+import com.google.gson.Gson;
 
 public class WebActivity extends Activity {
 	private WebView webView;
@@ -73,6 +91,8 @@ public class WebActivity extends Activity {
 	String archive = "0";
 	String bookmarkID = "";
 	String fullUrl = "";
+	String url = "";
+	String title = "";
 	private SQLiteDatabase database;
 
 	@Override
@@ -102,7 +122,6 @@ public class WebActivity extends Activity {
 
 		Bundle data = getIntent().getExtras();
 		String content = "";
-		String url = "";
 		authorized = checkAuthorization(this);
 		if(data != null) {
 			content = data.getString("article_content");
@@ -112,6 +131,7 @@ public class WebActivity extends Activity {
 			favorite = data.getString("favorite");
 			archive = data.getString("archive");
 			fullUrl = data.getString("full_url");
+			title = data.getString("article_title");
 		}
 		Log.e("url", url + "hi");
 		if(url != null && (content == null || content.length() < 3)) {
@@ -214,6 +234,12 @@ public class WebActivity extends Activity {
 			showPanel();
 			return true;
 		case R.id.menu_readlater:
+			if(checkAuthorization(this)) {
+				addBookmark(fullUrl);
+			}
+			else {
+				displayAlert(this, "Save bookmark", "To save bookmarks for later reading, you need an account on readability.com. To open an account, go back to the main menu, and click the authorize button.");
+			}
 			return true;
 		case R.id.menu_share:
 			showShareDialog();
@@ -230,6 +256,39 @@ public class WebActivity extends Activity {
 		shareDialog.setTitle("Share this article.");
 		shareDialog.setCanceledOnTouchOutside(true);
 		shareDialog.show();
+
+		ImageButton twitterButton = (ImageButton) shareDialog.findViewById(R.id.button_share_twitter);
+		ImageButton faceButton = (ImageButton) shareDialog.findViewById(R.id.button_share_facebook);
+		ImageButton emailButton = (ImageButton) shareDialog.findViewById(R.id.button_share_email);
+
+		try {
+			title = URLEncoder.encode(title,"UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} 
+		twitterButton.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse("http://twitter.com/intent/tweet?text=" + title + "&url=http%3A%2F%2Frdd.me%2F" + url + "&via=readability"));
+				startActivity(browserIntent);
+			}
+		});
+
+		faceButton.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse("http://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.readability.com%2Farticles%2F" + url));
+				startActivity(browserIntent);
+			}
+		});
+
+		emailButton.setOnClickListener(new View.OnClickListener() {
+
+			public void onClick(View v) {
+				Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse("https://www.readability.com/articles/" + url + "/email"));
+				startActivity(browserIntent);
+			}
+		});
 	}
 
 	private void toggleFavorite() {
@@ -338,6 +397,49 @@ public class WebActivity extends Activity {
 		popup.setClickable(true);
 	}
 
+	protected void addBookmark(final String url) {
+		ProgressDialog pDialog = HelperMethods.createProgressDialog(WebActivity.this, "Loading", "connecting to readability server...");
+		pDialog.show();
+		final Handler myHandler = new WebHandler(pDialog);
+		final Message msg = new Message();
+		new Thread() {
+			public void run() {
+				try {
+					Looper.prepare();
+					if(url == "" || url.length() < 3) {
+						msg.what = MSG_END;
+						msg.arg1 = MSG_BAD_URL;
+						myHandler.sendMessage(msg);
+					}
+					else {
+						SharedPreferences preferences = getBaseContext().getSharedPreferences(PREF_NAME, 0);
+						String oauthToken = preferences.getString("oauth_token", null); 
+						String oauthTokenSecret = preferences.getString("oauth_token_secret", null);
+						String oauthVerifier = preferences.getString("oauth_verifier", null);
+						String extraParams = String.format(
+								"&oauth_token=%s&oauth_token_secret=%s&oauth_verifier=%s", 
+								oauthToken, oauthTokenSecret, oauthVerifier);
+						String bookmarksUrl = requestApiUrl("bookmarks", API_SECRET + oauthTokenSecret, extraParams);
+						List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
+						nameValuePairs.add(new BasicNameValuePair("url", url));
+
+						String message = HelperMethods.postData(bookmarksUrl, nameValuePairs);
+						msg.obj = message;
+						msg.arg1 = MSG_START_SYNCARTICLES;
+						msg.what = MSG_END;
+						myHandler.sendMessage(msg);
+					}
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					msg.what = MSG_FAIL;
+					myHandler.sendMessage(msg);
+				}
+
+			}
+		}.start();
+	}
+	
 	private class CustomWebView extends WebViewClient {
 
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -400,6 +502,15 @@ public class WebActivity extends Activity {
 					break;
 				case MSG_WV_INIT:
 					initializeWV((String) msg.obj);
+					break;
+				case MSG_START_SYNCARTICLES:
+					new WebSyncArticles().execute();
+					Toast bookmarkConfirmMessage = Toast.makeText(WebActivity.this, "Bookmark added.", Toast.LENGTH_LONG);
+					bookmarkConfirmMessage.show();
+					break;
+				case MSG_BAD_URL:
+					Toast bookmarkCancelMessage = Toast.makeText(WebActivity.this, "Error posting bookmark.", Toast.LENGTH_LONG);
+					bookmarkCancelMessage.show();
 					break;
 				}
 				break;

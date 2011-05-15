@@ -161,6 +161,11 @@ public class MainMenu extends Activity {
 		handleTouches(helpButton);
 		handleTouches(settingsButton);
 
+		helpButton.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				displayInfo(MainMenu.this, "Help", "This is a client for readability.com. If you do not have an account, you can use the url bar at the top to format web articles or if you want to save articles you need a readability.com account which you can create by clicking on the authorize button.");
+			}
+		});
 
 		readNowButton.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
@@ -211,7 +216,7 @@ public class MainMenu extends Activity {
 
 
 	protected void addBookmark() {
-		ProgressDialog pDialog = HelperMethods.createProgressDialog(MainMenu.this, "Loading", "retrieving authorization url...");
+		ProgressDialog pDialog = HelperMethods.createProgressDialog(MainMenu.this, "Loading", "connecting to readability server...");
 		pDialog.show();
 		final Handler myHandler = new MessageHandler(pDialog);
 		final Message msg = new Message();
@@ -224,8 +229,9 @@ public class MainMenu extends Activity {
 					InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
 					imm.hideSoftInputFromWindow(urlRead.getWindowToken(), 0);
 					if(url == "" || url.length() < 3) {
-						Toast msg = Toast.makeText(MainMenu.this, "Please enter the article url in the textbox above.", Toast.LENGTH_LONG);
-						msg.show();
+						msg.what = MSG_END;
+						msg.arg1 = MSG_BAD_URL;
+						myHandler.sendMessage(msg);
 					}
 					else {
 						SharedPreferences preferences = getBaseContext().getSharedPreferences(PREF_NAME, 0);
@@ -264,6 +270,17 @@ public class MainMenu extends Activity {
 			startActivity(i);
 		}
 	}
+	
+	public void launchWebBrowser(String visitUrl, String fullUrl) {
+		if(visitUrl != "") {
+			Intent i = new Intent(getBaseContext(), WebActivity.class);
+			i.putExtra("article_url", visitUrl);
+			i.putExtra("full_url", fullUrl);
+			i.putExtra("saved", false);
+			startActivity(i);
+		}
+	}
+
 
 	public void removeImageEffects(ImageView v) {
 		v.setColorFilter(null);
@@ -402,7 +419,7 @@ public class MainMenu extends Activity {
 		public void handleMessage(Message msg) {
 			switch(msg.what) {
 			case MSG_END:
-				if(pDialog.isShowing())
+				if(pDialog != null && pDialog.isShowing())
 					pDialog.dismiss();
 				switch(msg.arg1) {
 				case MSG_START_SETUPVIEWS:
@@ -415,8 +432,13 @@ public class MainMenu extends Activity {
 					break;
 				case MSG_START_SYNCARTICLES:
 					new SyncArticles().execute();
-					Toast message = Toast.makeText(MainMenu.this, "Bookmark added.", Toast.LENGTH_LONG);
-					message.show();
+					Toast bookmarkConfirmMessage = Toast.makeText(MainMenu.this, "Bookmark added.", Toast.LENGTH_LONG);
+					bookmarkConfirmMessage.show();
+					break;
+				case MSG_BAD_URL:
+					Toast badUrlMessage = Toast.makeText(MainMenu.this, "Please enter the article url in the textbox above.", Toast.LENGTH_LONG);
+					badUrlMessage.show();
+					break;
 				}
 				break;
 			case MSG_FAIL:
@@ -433,7 +455,7 @@ public class MainMenu extends Activity {
 		String articleId;
 		final String connectionError = "conn";
 		final String urlError = "url";
-
+		String fullUrl = "";
 		@Override
 		protected void onPostExecute(String url) {
 			if(progress.isShowing()) {
@@ -448,7 +470,7 @@ public class MainMenu extends Activity {
 				return;
 			}
 
-			launchWebBrowser(url);
+			launchWebBrowser(url, fullUrl);
 		}
 
 		protected void onPreExecute() {
@@ -460,6 +482,7 @@ public class MainMenu extends Activity {
 		@Override
 		protected String doInBackground(String... urls) {
 			String url = urls[0];
+			fullUrl = url;
 			try {
 				DefaultHttpClient mHttpClient = new DefaultHttpClient();
 				BasicHttpContext mHttpContext = new BasicHttpContext();
