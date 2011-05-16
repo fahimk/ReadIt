@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<CheckBoxPreference android:title="Enable sync on startup"
-		android:key="EnablePreferences" android:summary="Check to enable Other Preferences" />
-	<CheckBoxPreference android:title="Enable Preferences"
-		android:key="EnablePreferences" android:summary="Check to enable Other Preferences" />
-</PreferenceScreen>

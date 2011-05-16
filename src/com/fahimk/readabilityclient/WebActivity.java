@@ -49,7 +49,6 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -60,26 +59,24 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
-import android.view.inputmethod.InputMethodManager;
+import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.fahimk.jsonobjects.Bookmark;
 import com.fahimk.jsonobjects.SearchBookmarks;
-import com.fahimk.readabilityclient.MainMenu.MessageHandler;
-import com.fahimk.readabilityclient.MainMenu.SyncArticles;
 import com.google.gson.Gson;
 
 public class WebActivity extends Activity {
@@ -100,9 +97,19 @@ public class WebActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		database = setupDB(this);
 
-		this.getWindow().requestFeature(Window.FEATURE_PROGRESS);
+		SharedPreferences sharedPreferences  = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		boolean fullScreen = sharedPreferences.getBoolean("fullScreen", false);
+		if(fullScreen) {
+			requestWindowFeature(Window.FEATURE_NO_TITLE);
+			getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, 
+					WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		} else {
+			getWindow().requestFeature(Window.FEATURE_PROGRESS);
+		}
 		setContentView(R.layout.web);
-		getWindow().setFeatureInt( Window.FEATURE_PROGRESS, Window.PROGRESS_VISIBILITY_ON);
+		if(!fullScreen) {
+			getWindow().setFeatureInt( Window.FEATURE_PROGRESS, Window.PROGRESS_VISIBILITY_ON);
+		}
 		setupCustomPanel();
 		webView = (WebView)this.findViewById(R.id.webView);
 
@@ -439,7 +446,7 @@ public class WebActivity extends Activity {
 			}
 		}.start();
 	}
-	
+
 	private class CustomWebView extends WebViewClient {
 
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {

@@ -15,7 +15,28 @@ import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.DATE_UPDATED
 import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.FAVORITE;
 import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.MY_ID;
 import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.READ_PERCENT;
-import static com.fahimk.readabilityclient.HelperMethods.*;
+import static com.fahimk.readabilityclient.HelperMethods.API_SECRET;
+import static com.fahimk.readabilityclient.HelperMethods.MSG_BAD_URL;
+import static com.fahimk.readabilityclient.HelperMethods.MSG_END;
+import static com.fahimk.readabilityclient.HelperMethods.MSG_FAIL;
+import static com.fahimk.readabilityclient.HelperMethods.MSG_START_SETUPVIEWS;
+import static com.fahimk.readabilityclient.HelperMethods.MSG_START_SYNCARTICLES;
+import static com.fahimk.readabilityclient.HelperMethods.MSG_START_WEBVIEWINTENT;
+import static com.fahimk.readabilityclient.HelperMethods.OAUTH_ACCESS;
+import static com.fahimk.readabilityclient.HelperMethods.OAUTH_AUTHORIZE;
+import static com.fahimk.readabilityclient.HelperMethods.OAUTH_REQUEST;
+import static com.fahimk.readabilityclient.HelperMethods.PREF_NAME;
+import static com.fahimk.readabilityclient.HelperMethods.URL_CALLBACK;
+import static com.fahimk.readabilityclient.HelperMethods.checkAuthorization;
+import static com.fahimk.readabilityclient.HelperMethods.displayAlert;
+import static com.fahimk.readabilityclient.HelperMethods.displayInfo;
+import static com.fahimk.readabilityclient.HelperMethods.getStream;
+import static com.fahimk.readabilityclient.HelperMethods.handleTouches;
+import static com.fahimk.readabilityclient.HelperMethods.lightenImage;
+import static com.fahimk.readabilityclient.HelperMethods.parseHTML;
+import static com.fahimk.readabilityclient.HelperMethods.requestApiUrl;
+import static com.fahimk.readabilityclient.HelperMethods.setupDB;
+import static com.fahimk.readabilityclient.HelperMethods.zeroUpdate;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -49,17 +70,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.preference.PreferenceManager;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -77,7 +96,7 @@ import com.google.gson.Gson;
 public class MainMenu extends Activity {
 
 	private SQLiteDatabase database;
-
+	boolean skip = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -85,6 +104,16 @@ public class MainMenu extends Activity {
 		setContentView(R.layout.main_menu);
 		database = setupDB(this);
 		setupViews();
+		SharedPreferences sharedPreferences  = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+		boolean syncNow = sharedPreferences.getBoolean("syncStartup", false);
+		skip = sharedPreferences.getBoolean("skipMenu", false);
+		if(syncNow) {
+			SyncArticles task = new SyncArticles();
+			task.execute(skip);
+		}
+		else if(skip) {
+			startActivity(new Intent(getBaseContext(), ReadingList.class));
+		}
 	}
 
 	public void onDestroy() {
@@ -137,6 +166,12 @@ public class MainMenu extends Activity {
 			syncButton.setOnClickListener(new View.OnClickListener() {
 				public void onClick(View v) {
 					new SyncArticles().execute();
+				}
+			});
+
+			settingsButton.setOnClickListener(new View.OnClickListener() {
+				public void onClick(View v) {
+					startActivity(new Intent(getBaseContext(), Preferences.class));
 				}
 			});
 
@@ -270,7 +305,7 @@ public class MainMenu extends Activity {
 			startActivity(i);
 		}
 	}
-	
+
 	public void launchWebBrowser(String visitUrl, String fullUrl) {
 		if(visitUrl != "") {
 			Intent i = new Intent(getBaseContext(), WebActivity.class);
@@ -536,7 +571,7 @@ public class MainMenu extends Activity {
 
 	}
 
-	public class SyncArticles extends AsyncTask<Void, Integer, Boolean> {
+	public class SyncArticles extends AsyncTask<Boolean, Integer, Boolean> {
 		ProgressDialog progressDialog;
 		ProgressDialog tempDialog;
 		String oauthToken;
@@ -544,7 +579,6 @@ public class MainMenu extends Activity {
 		String oauthVerifier;
 		SharedPreferences preferences;
 		String previousUpdate;
-
 		protected void onPreExecute() {
 			preferences = getSharedPreferences(PREF_NAME, 0);
 			oauthToken = preferences.getString("oauth_token", null); 
@@ -563,7 +597,7 @@ public class MainMenu extends Activity {
 			progressDialog.setCancelable(false);
 		}
 
-		protected Boolean doInBackground(Void... params) {
+		protected Boolean doInBackground(Boolean... params) {
 			String extraParams = "";
 			Log.e("previousUpdate", previousUpdate);
 			extraParams = String.format(
@@ -661,6 +695,12 @@ public class MainMenu extends Activity {
 			}
 			if(progressDialog.isShowing()) {
 				progressDialog.dismiss();
+			}
+			if(unused == false) {
+				displayAlert(MainMenu.this, "Error", "Could not connect to readability.com, please check your internet connection status and try again.");
+			}
+			if(skip) {
+				startActivity(new Intent(MainMenu.this, ReadingList.class));
 			}
 		}
 

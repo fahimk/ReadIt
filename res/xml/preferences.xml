@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+	<CheckBoxPreference android:title="Enable sync on startup"
+		android:key="syncStartup" android:summary="Update bookmarks whenever the app is opened." />
+	<CheckBoxPreference android:title="Skip menu on startup"
+		android:key="skipMenu" android:summary="Go straight to the bookmarks screen." />
+	<CheckBoxPreference android:title="Full screen reading view"
+		android:key="fullScreen" android:summary="If enabled, the loading bar is not visible." />
+</PreferenceScreen>
