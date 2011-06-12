@@ -123,7 +123,7 @@ public class WebActivity extends Activity {
 
 				// Return the app name after finish loading
 				if(progress == 100)
-					MyActivity.setTitle(R.string.app_name);
+					MyActivity.setTitle("ReadIt - Reader");
 			}
 		});
 

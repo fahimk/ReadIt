@@ -4,7 +4,7 @@
 	android:background="#E7E6E2" android:layout_width="fill_parent">
 	<RelativeLayout android:padding="12dp"
 		android:layout_width="fill_parent" android:layout_height="wrap_content">
-		<Button android:id="@+id/button_readnow" android:text="Read!"
+		<Button android:id="@+id/button_readnow" android:text="ReadIt!"
 			android:layout_alignParentRight="true" android:layout_width="wrap_content"
 			android:layout_height="wrap_content">
 		</Button>
