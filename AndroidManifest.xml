@@ -20,11 +20,11 @@
 			</intent-filter>
 		</activity>
 		<activity 
-			android:name="ReadingList" android:label="ReadIt - Bookmarks" />
+			android:name="ReadingList" android:label="ReadIt" />
 		<activity android:configChanges="keyboardHidden|orientation"
-			android:name=".WebActivity" android:label="ReadIt - Reader" />
+			android:name=".WebActivity" android:label="ReadIt" />
 		<activity android:theme="@android:style/Theme.NoTitleBar"
-			android:name=".Preferences" android:label="ReadIt - Preferences" />
+			android:name=".Preferences" android:label="ReadIt" />
 	</application>
 	<uses-permission android:name="android.permission.INTERNET" />
 </manifest>

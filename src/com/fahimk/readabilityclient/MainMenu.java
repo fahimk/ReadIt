@@ -97,7 +97,7 @@ public class MainMenu extends Activity {
 
 	private SQLiteDatabase database;
 	boolean skip = false;
-	boolean debug = true;
+	boolean debug = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

@@ -3,7 +3,7 @@
 	<style name="Theme.Readability" parent="@android:Theme">
 	
 		<!-- Window -->
-		<item name="android:windowTitleSize">30dp</item>
+		<item name="android:windowTitleSize">40dp</item>
 		<item name="android:windowTitleStyle">@style/WindowTitle</item>
 		<item name="android:windowTitleBackgroundStyle">@style/WindowTitleBackground</item>
 
