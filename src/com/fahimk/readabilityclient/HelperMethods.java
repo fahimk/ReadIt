@@ -175,7 +175,8 @@ public class HelperMethods {
 		in.close();
 		html = str.toString();
 		html = html.replaceAll("/media/css/mobile.css", "file:///android_asset/mobile.css");
-		html = html.replaceAll("/media/js/jquery.min.js", "file:///android_asset/jquery.min.js");
+		//html = html.replaceAll("//ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js", "file:///android_asset/jquery.min.js");
+		html = html.replace("</script>", "</script>\n <script type=\"text/javascript\" src=\"file:///android_asset/jquery.min.js\"></script>\n");
 		//c = c.replaceAll("<a href=\"#\" class=\"article-back-link\">", "<a href=\"##\" class=\"article-back-link\">");
 		//Log.e("html", c);
 		return html;

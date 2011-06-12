@@ -3,7 +3,7 @@
 	<item android:id="@+id/menu_styles" 
 		android:title="styles" android:icon="@drawable/icon_style" />
 	<item android:id="@+id/menu_share"
-		android:title="share" android:icon="@drawable/icon_share" />
+		android:title="share" android:icon="@android:drawable/ic_menu_share" />
 		<item android:id="@+id/menu_readlater"
-		android:title="read later" />
+		android:title="read later" android:icon="@android:drawable/ic_menu_save" />
 </menu>

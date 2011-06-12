@@ -472,6 +472,7 @@ public class WebActivity extends Activity {
 			view.loadUrl("javascript:(function() { " +  
 					"var readBar = document.getElementById('read-bar'); readBar.parentNode.removeChild(readBar);"+
 					"var footNote = document.getElementById('article-marketing'); footNote.parentNode.removeChild(footNote);"+
+					"var bottom = document.getElementById('article-nav'); bottom.parentNode.removeChild(bottom);" +
 			"})()");  
 
 			//need better algorithm for this based on number of words

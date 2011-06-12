@@ -97,6 +97,7 @@ public class MainMenu extends Activity {
 
 	private SQLiteDatabase database;
 	boolean skip = false;
+	boolean debug = true;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -139,6 +140,10 @@ public class MainMenu extends Activity {
 		final ImageView settingsButton = (ImageView) findViewById(R.id.button_settings);
 		final TextView settingsText = (TextView) findViewById(R.id.text_settings);
 
+		if(!debug) {
+			deleteButton.setVisibility(View.GONE);
+			authorizeButton.setVisibility(View.GONE);
+		}
 		if(authorized) {
 			settingsButton.setImageResource(R.drawable.icon_settings);
 			settingsText.setText("Settings");
