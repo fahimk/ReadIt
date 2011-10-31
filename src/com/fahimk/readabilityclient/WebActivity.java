@@ -128,6 +128,7 @@ public class WebActivity extends Activity {
 		});
 
 		Bundle data = getIntent().getExtras();
+
 		String content = "";
 		authorized = checkAuthorization(this);
 		if(data != null) {
@@ -143,7 +144,7 @@ public class WebActivity extends Activity {
 		Log.e("url", url + "hi");
 		if(url != null && (content == null || content.length() < 3)) {
 			try {
-				String s = "https://www.readability.com/mobile/articles/"+url;
+				String s = "http://www.readability.com/mobile/articles/"+url;
 				getHTMLThread(s);
 			} catch (Exception e) {
 				Log.e("exception loading url", e.getMessage());
@@ -211,6 +212,12 @@ public class WebActivity extends Activity {
 		if(articleSaved) {
 			MenuItem fav = (MenuItem) menu.getItem(0);
 			MenuItem arc = (MenuItem) menu.getItem(1);
+			if(favorite == null) {
+				favorite = "0";
+			}
+			if(archive == null) {
+				archive = "0";
+			}
 			if(favorite.equals("0")){
 				fav.setIcon(android.R.drawable.btn_star_big_off);
 			}
@@ -269,7 +276,12 @@ public class WebActivity extends Activity {
 		ImageButton emailButton = (ImageButton) shareDialog.findViewById(R.id.button_share_email);
 
 		try {
-			title = URLEncoder.encode(title,"UTF-8");
+			if(title != null) {
+				title = URLEncoder.encode(title,"UTF-8");
+			}
+			else {
+				title = URLEncoder.encode(webView.getTitle(),"UTF-8");
+			}
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		} 
@@ -292,7 +304,7 @@ public class WebActivity extends Activity {
 		emailButton.setOnClickListener(new View.OnClickListener() {
 
 			public void onClick(View v) {
-				Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse("https://www.readability.com/articles/" + url + "/email"));
+				Intent browserIntent = new Intent("android.intent.action.VIEW", Uri.parse("http://www.readability.com/articles/" + url + "/email"));
 				startActivity(browserIntent);
 			}
 		});
@@ -451,7 +463,7 @@ public class WebActivity extends Activity {
 
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
 			Log.e("url", url);
-			if (!url.startsWith("https://www.readability.com")) {  
+			if (!url.startsWith("http://www.readability.com") || !url.startsWith("https://www.readability.com")) {  
 
 				Intent i = new Intent(Intent.ACTION_VIEW);
 				i.setData(Uri.parse(url));
@@ -607,7 +619,7 @@ public class WebActivity extends Activity {
 				}
 				else if(!bm.archive) {
 					try {
-						String html = parseHTML("https://readability.com/mobile/articles/"+bm.article.id);
+						String html = parseHTML("http://readability.com/mobile/articles/"+bm.article.id);
 						values.put(ARTICLE_CONTENT, html);
 						database.insert(ARTICLE_TABLE, null, values);
 						Log.e("inserted", bm.article.title );

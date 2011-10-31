@@ -228,8 +228,8 @@ public class JavascriptModifyFunctions {
 		}
 
 		String js = "javascript:(function() { " +
-		"var originalClass = $('article').attr('class');" +
-		"$('article').attr('class', originalClass.replace(/mobile-"+editNames[type]+"-[a-zA-Z0-9-_]*/, 'mobile-"+editNames[type]+"-"+useArray[value].toLowerCase()+"'))" +
+		"var originalClass = $('#rdb-article').attr('class');" +
+		"$('#rdb-article').attr('class', originalClass.replace(/mobile-"+editNames[type]+"-[a-zA-Z0-9-_]*/, 'mobile-"+editNames[type]+"-"+useArray[value].toLowerCase()+"'))" +
 		"})()";
 		Log.e("js", js);
 		Log.e("defaults", String.format("%d,%d,%d",currentTypesSelected[0],currentTypesSelected[1],currentTypesSelected[2]));

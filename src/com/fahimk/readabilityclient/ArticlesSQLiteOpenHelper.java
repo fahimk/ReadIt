@@ -1,12 +1,15 @@
 package com.fahimk.readabilityclient;
 
+import static com.fahimk.readabilityclient.HelperMethods.PREF_NAME;
+import static com.fahimk.readabilityclient.HelperMethods.zeroUpdate;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class ArticlesSQLiteOpenHelper extends SQLiteOpenHelper {
 
-	public static final int VERSION = 1;
+	public static final int VERSION = 5;
 	public static final String DB_NAME = "article_db.sqlite";
 	public static String MY_ID = "my_id";
 	public static String ARTICLE_TABLE = "article";
@@ -26,9 +29,11 @@ public class ArticlesSQLiteOpenHelper extends SQLiteOpenHelper {
 	public static String ARTICLE_HREF = "article_href";
 	public static String DATE_FAVORITED = "date_favorited";
 	public static String ARCHIVE = "archive";
-
+	Context c;
+	
 	public ArticlesSQLiteOpenHelper(Context context) {
 		super(context, DB_NAME, null, VERSION);
+		c = context;
 	}
 
 	@Override
@@ -36,8 +41,14 @@ public class ArticlesSQLiteOpenHelper extends SQLiteOpenHelper {
 		createTables(db);
 	}
 
+
 	@Override
-	public void onUpgrade(SQLiteDatabase arg0, int arg1, int arg2) {
+	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		db.delete(ARTICLE_TABLE, null, null);
+		SharedPreferences preferences = c.getSharedPreferences(PREF_NAME, 0);
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.putString("previous_update", zeroUpdate);
+		editor.commit();
 	}
 
 	protected void createTables(SQLiteDatabase db) {

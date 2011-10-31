@@ -79,6 +79,9 @@ import android.os.Message;
 import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
@@ -103,6 +106,12 @@ public class MainMenu extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_menu);
+		String webPageUrl = getIntent().getStringExtra(Intent.EXTRA_TEXT);
+		if(webPageUrl != null) {
+			webPageUrl = webPageUrl.split("\n")[0];
+			GetArticleTask fetchContent = new GetArticleTask();
+			fetchContent.execute(webPageUrl);
+		}
 		database = setupDB(this);
 		setupViews();
 		SharedPreferences sharedPreferences  = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
@@ -121,7 +130,28 @@ public class MainMenu extends Activity {
 		super.onDestroy();
 		database.close();
 	}
-
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+	    MenuInflater inflater = getMenuInflater();
+	    inflater.inflate(R.menu.menu_clear, menu);
+	    return true;
+	}
+	
+	public boolean onOptionsItemSelected(MenuItem item) {
+	    // Handle item selection
+	    switch (item.getItemId()) {
+	    case R.id.menu_delete:
+	    	database.delete(ARTICLE_TABLE, null, null);
+			SharedPreferences preferences = getBaseContext().getSharedPreferences(PREF_NAME, 0);
+			SharedPreferences.Editor editor = preferences.edit();
+			editor.putString("previous_update", zeroUpdate);
+			editor.commit();
+	        return true;
+	    }
+	    return false;
+	}
+	
 	public void setupViews() {
 		boolean authorized = checkAuthorization(this);
 		Log.e("authorization", "is " + authorized);
@@ -529,12 +559,12 @@ public class MainMenu extends Activity {
 				CookieStore mCookieStore      = new BasicCookieStore();        
 				mHttpContext.setAttribute(ClientContext.COOKIE_STORE, mCookieStore);
 
-				HttpGet httpget = new HttpGet("https://www.readability.com/shorten");
+				HttpGet httpget = new HttpGet("http://www.readability.com/shorten");
 
 				HttpResponse response;
 				response = mHttpClient.execute(httpget, mHttpContext);
 
-				HttpPost httpost = new HttpPost("https://www.readability.com/~/");
+				HttpPost httpost = new HttpPost("http://www.readability.com/~/");
 
 				List <NameValuePair> nvps = new ArrayList <NameValuePair>();
 				nvps.add(new BasicNameValuePair("url", url));
@@ -542,7 +572,7 @@ public class MainMenu extends Activity {
 				httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
 				httpost.setHeader("Keep-Alive", "115");
 				httpost.setHeader("Connection", "keep-alive");
-				httpost.setHeader("Referer", "https://www.readability.com/shorten");
+				httpost.setHeader("Referer", "http://www.readability.com/shorten");
 				httpost.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1");
 				httpost.setHeader("X-Requested-With", "XMLHttpRequest");
 				List<Cookie> cl = mCookieStore.getCookies();
@@ -662,7 +692,7 @@ public class MainMenu extends Activity {
 				}
 				else if(!bm.archive) {
 					try {
-						String html = parseHTML("https://readability.com/mobile/articles/"+bm.article.id);
+						String html = parseHTML("http://readability.com/mobile/articles/"+bm.article.id);
 						values.put(ARTICLE_CONTENT, html);
 						database.insert(ARTICLE_TABLE, null, values);
 						Log.e("inserted", bm.article.title );

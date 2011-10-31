@@ -55,6 +55,8 @@ public class HelperMethods {
 	public final static int MSG_WV_INIT = 7;
 	public final static int MSG_WV_ADDFAV = 8;
 	public final static int MSG_WV_ADDARC = 9;
+	
+	public final static String agent = "Mozilla/5.0 (Linux; U; Android 2.1-update1; de-de; HTC Desire 1.19.161.5 Build/ERE27) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
 
 
 	public final static String zeroUpdate = "2011-01-01 00:00:00";
@@ -160,9 +162,10 @@ public class HelperMethods {
 	public static String parseHTML(String Url) throws Exception {
 		HttpClient client = new DefaultHttpClient();
 		HttpGet request = new HttpGet(Url);
-
+		request.setHeader("User-Agent", agent);
+		
 		HttpResponse response = client.execute(request);
-
+		
 		String html = "";
 		InputStream in = response.getEntity().getContent();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(in));
@@ -174,12 +177,25 @@ public class HelperMethods {
 		}
 		in.close();
 		html = str.toString();
-		html = html.replaceAll("/media/css/mobile.css", "file:///android_asset/mobile.css");
+		String s = "!-- Content --";
+		String s2 = "!-- Scripts --";
+		String s3 = "!-- Footer and Content Info --";
+		String s4 = "!-- End #rdb-footer --";
+		html = html.substring(html.indexOf(s) + s.length() + 1);
+		html = html.substring(0, html.indexOf(s2) - s2.length() - 1);
+		String topPart = html.substring(0, html.indexOf(s3) - s3.length() - 1);
+		String bottomPart = html.substring(html.indexOf(s4) + s4.length() + 1);
+		String fullHtml = topPart + bottomPart;
+		
+		fullHtml = fullHtml.replace("/learn-more", "http://www.readability.com/learn-more");
+		fullHtml = "<head><link rel=\"stylesheet\" href=\"file:///android_asset/mobile2.css\" type=\"text/css\" media=\"all\" charset=\"utf-8\"" + fullHtml;
+		fullHtml = fullHtml + "<script type=\"text/javascript\" src=\"file:///android_asset/jquery.min.js\"></script>";
+		html = html.replaceAll("/media/css/mobile2.css", "file:///android_asset/mobile2.css");
 		//html = html.replaceAll("//ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js", "file:///android_asset/jquery.min.js");
 		html = html.replace("</script>", "</script>\n <script type=\"text/javascript\" src=\"file:///android_asset/jquery.min.js\"></script>\n");
 		//c = c.replaceAll("<a href=\"#\" class=\"article-back-link\">", "<a href=\"##\" class=\"article-back-link\">");
 		//Log.e("html", c);
-		return html;
+		return fullHtml;
 	}
 
 	public static void displayAlert(Context context, String title, String message) {
