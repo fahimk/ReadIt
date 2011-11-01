@@ -55,6 +55,7 @@ public class HelperMethods {
 	public final static int MSG_WV_INIT = 7;
 	public final static int MSG_WV_ADDFAV = 8;
 	public final static int MSG_WV_ADDARC = 9;
+	public final static int MSG_WV_READ_PERCENT = 10;
 	
 	public final static String agent = "Mozilla/5.0 (Linux; U; Android 2.1-update1; de-de; HTC Desire 1.19.161.5 Build/ERE27) AppleWebKit/530.17 (KHTML, like Gecko) Version/4.0 Mobile Safari/530.17";
 

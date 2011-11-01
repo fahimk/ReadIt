@@ -22,6 +22,7 @@ import static com.fahimk.readabilityclient.HelperMethods.MSG_FAIL;
 import static com.fahimk.readabilityclient.HelperMethods.MSG_START_SYNCARTICLES;
 import static com.fahimk.readabilityclient.HelperMethods.MSG_WV_ADDARC;
 import static com.fahimk.readabilityclient.HelperMethods.MSG_WV_ADDFAV;
+import static com.fahimk.readabilityclient.HelperMethods.MSG_WV_READ_PERCENT;
 import static com.fahimk.readabilityclient.HelperMethods.MSG_WV_INIT;
 import static com.fahimk.readabilityclient.HelperMethods.PREF_NAME;
 import static com.fahimk.readabilityclient.HelperMethods.checkAuthorization;
@@ -165,6 +166,25 @@ public class WebActivity extends Activity {
 		}
 		//Log.e("content", content);
 
+	}
+
+	@Override
+	public void onBackPressed() {
+		float progress = 0;
+		Log.v("getScrollY", "" + webView.getScrollY());
+		Log.v("getHeight", "" + webView.getHeight());
+		Log.v("getContentHeight", "" + webView.getContentHeight());
+		Log.v("getScale", "" + webView.getScale());
+		if ((int)(webView.getScrollY() + webView.getHeight()) >= (int)(webView.getContentHeight() * webView.getScale())) {
+			progress = 1;
+		}
+		else {
+			progress = (webView.getScrollY()) / (webView.getContentHeight() * webView.getScale());
+		}
+		Log.v("back", "progress = " + progress);
+		read_percent = progress;
+		updateReadPercent();
+		super.onBackPressed();
 	}
 
 	public void initializeWV(String content) {
@@ -319,6 +339,41 @@ public class WebActivity extends Activity {
 		});
 	}
 
+	private void updateReadPercent() {
+		ProgressDialog pDialog = HelperMethods.createProgressDialog(WebActivity.this, "Loading", "saving read position...");
+		final Handler myHandler = new WebHandler(pDialog);
+		final Message msg = new Message();
+		new Thread() {
+			public void run() {
+				try {
+					Looper.prepare();
+					SharedPreferences preferences = getBaseContext().getSharedPreferences(PREF_NAME, 0);
+					String oauthToken = preferences.getString("oauth_token", null); 
+					String oauthTokenSecret = preferences.getString("oauth_token_secret", null);
+					String oauthVerifier = preferences.getString("oauth_verifier", null);
+					String extraParams = String.format(
+							"&oauth_token=%s&oauth_token_secret=%s&oauth_verifier=%s", 
+							oauthToken, oauthTokenSecret, oauthVerifier);
+					String bookmarksUrl = requestApiUrl("bookmarks/" + bookmarkID +"/", API_SECRET + oauthTokenSecret, extraParams);
+					List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>();
+					nameValuePairs.add(new BasicNameValuePair("read_percent", String.format("%.2g%n", read_percent)));
+					String message = HelperMethods.postData(bookmarksUrl, nameValuePairs);
+					msg.obj = message;
+					msg.what = MSG_END;
+					msg.arg1 = MSG_WV_READ_PERCENT;
+					myHandler.sendMessage(msg);
+				}
+				catch (Exception e) {
+					e.printStackTrace();
+					msg.what = MSG_FAIL;
+					myHandler.sendMessage(msg);
+				}
+
+			}
+		}.start();
+
+	}
+	
 	private void toggleFavorite() {
 		favorite = (favorite.equals("0")) ? "1" : "0";
 		WebSyncArticles task = new WebSyncArticles();
@@ -548,6 +603,11 @@ public class WebActivity extends Activity {
 					bookmarkCancelMessage.show();
 					break;
 				}
+				case MSG_WV_READ_PERCENT:
+					new WebSyncArticles().execute();
+					Toast message4 = Toast.makeText(WebActivity.this, "Read position saved", Toast.LENGTH_LONG);
+					message4.show();
+					break;
 				break;
 			case MSG_FAIL:
 				if(pDialog.isShowing())
