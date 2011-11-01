@@ -127,6 +127,7 @@ public class ReadingList extends TabActivity {
 				i.putExtra("favorite", readArticlesInfo.get(position).favorite);
 				i.putExtra("bookmark_id", readArticlesInfo.get(position).bookmark_id);
 				i.putExtra("article_title", readArticlesInfo.get(position).title);
+				i.putExtra("read_percent", readArticlesInfo.get(position).read_percent);
 				startActivity(i);
 			}
 		});
@@ -144,6 +145,7 @@ public class ReadingList extends TabActivity {
 				i.putExtra("full_url", favArticlesInfo.get(position).url);
 				i.putExtra("bookmark_id", favArticlesInfo.get(position).bookmark_id);
 				i.putExtra("article_title", readArticlesInfo.get(position).title);
+				i.putExtra("read_percent", readArticlesInfo.get(position).read_percent);
 				startActivity(i);
 			}
 		});
@@ -159,6 +161,7 @@ public class ReadingList extends TabActivity {
 				i.putExtra("full_url", arcArticlesInfo.get(position).url);
 				i.putExtra("bookmark_id", arcArticlesInfo.get(position).bookmark_id);
 				i.putExtra("article_title", readArticlesInfo.get(position).title);
+				i.putExtra("read_percent", readArticlesInfo.get(position).read_percent);
 				startActivity(i);
 			}
 		});
@@ -168,7 +171,7 @@ public class ReadingList extends TabActivity {
 	public ReadingListAdapter getAdapterQuery(String filter, ArrayList<Article> articleInfo) {
 		Log.e("getAdapterQuery", "running query");
 		//String url, String domain, String id, String title, String content
-		String[] getStrColumns = new String[] {ARTICLE_URL, ARTICLE_DOMAIN, ARTICLE_ID, ARTICLE_TITLE, ARTICLE_CONTENT, BOOKMARK_ID, FAVORITE, ARCHIVE};
+		String[] getStrColumns = new String[] {ARTICLE_URL, ARTICLE_DOMAIN, ARTICLE_ID, ARTICLE_TITLE, ARTICLE_CONTENT, BOOKMARK_ID, FAVORITE, ARCHIVE, READ_PERCENT};
 		Cursor ac = database.query(
 				ARTICLE_TABLE,
 				getStrColumns,
@@ -176,7 +179,7 @@ public class ReadingList extends TabActivity {
 		ac.moveToFirst();
 		if(!ac.isAfterLast()) {
 			do {
-				Article tempArticle = new Article(ac.getString(0),ac.getString(1),ac.getString(2),ac.getString(3),ac.getString(4), ac.getString(5), ac.getString(6), ac.getString(7));
+				Article tempArticle = new Article(ac.getString(0),ac.getString(1),ac.getString(2),ac.getString(3),ac.getString(4), ac.getString(5), ac.getString(6), ac.getString(7), ac.getString(8));
 				articleInfo.add(tempArticle);
 			} while (ac.moveToNext());
 		}

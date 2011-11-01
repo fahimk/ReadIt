@@ -9,8 +9,9 @@ public class Article {
     public String bookmark_id;
     public String favorite;
     public String archive;
+    public String read_percent;
     
-    public Article(String url, String domain, String id, String title, String content, String bookmark_id, String favorite, String archive) {
+    public Article(String url, String domain, String id, String title, String content, String bookmark_id, String favorite, String archive, String read_percent) {
 		super();
 		this.url = url;
 		this.domain = domain;
@@ -20,5 +21,6 @@ public class Article {
 		this.bookmark_id = bookmark_id;
 		this.favorite = favorite;
 		this.archive = archive;
+		this.read_percent = read_percent;
 	}
 }
