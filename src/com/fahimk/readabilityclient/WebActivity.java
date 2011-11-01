@@ -90,6 +90,7 @@ public class WebActivity extends Activity {
 	String fullUrl = "";
 	String url = "";
 	String title = "";
+	float read_percent = 0;
 	private SQLiteDatabase database;
 
 	@Override
@@ -140,6 +141,14 @@ public class WebActivity extends Activity {
 			archive = data.getString("archive");
 			fullUrl = data.getString("full_url");
 			title = data.getString("article_title");
+			Log.e("read_percent", "read_percent string = " + data.getString("read_percent"));
+			try {
+				read_percent = Float.valueOf(data.getString("read_percent")).floatValue();
+			}
+			catch (Exception e) {
+				// read_percent can stay 0.0 for all I care
+			}
+			Log.e("read_percent", "read_percent float = " + read_percent);
 		}
 		Log.e("url", url + "hi");
 		if(url != null && (content == null || content.length() < 3)) {
@@ -486,6 +495,12 @@ public class WebActivity extends Activity {
 					"var footNote = document.getElementById('article-marketing'); footNote.parentNode.removeChild(footNote);"+
 					"var bottom = document.getElementById('article-nav'); bottom.parentNode.removeChild(bottom);" +
 			"})()");  
+			view.loadUrl("javascript:(function() {" +
+					"$(document).ready(function() {" +
+					"$('body').scrollTop($('body').outerHeight() * " + read_percent + " )" +
+					"});" +
+					"})()");
+
 
 			//need better algorithm for this based on number of words
 			//view.scrollTo(0, (int) (scrollPosition * view.getContentHeight() + view.getHeight()));
