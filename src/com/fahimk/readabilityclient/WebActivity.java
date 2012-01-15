@@ -608,7 +608,6 @@ public class WebActivity extends Activity {
 					Toast message4 = Toast.makeText(WebActivity.this, "Read position saved", Toast.LENGTH_LONG);
 					message4.show();
 					break;
-				break;
 			case MSG_FAIL:
 				if(pDialog.isShowing())
 					pDialog.dismiss();
