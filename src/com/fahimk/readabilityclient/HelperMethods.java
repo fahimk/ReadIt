@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
@@ -116,6 +117,36 @@ public class HelperMethods {
 			}
 		});
 	}
+	
+	public static InputStream postStream(String url, List<NameValuePair> nvps) {
+		DefaultHttpClient client = new DefaultHttpClient();
+		Log.e("visiting: ", url);
+		HttpPost getRequest = new HttpPost(url);
+		try {
+			getRequest.setEntity(new UrlEncodedFormEntity(nvps));
+		} catch (UnsupportedEncodingException e1) {
+			e1.printStackTrace();
+		}
+		Log.e("heres what i got", "hello");
+		try {
+			HttpResponse getResponse = client.execute(getRequest);
+			final int statusCode = getResponse.getStatusLine().getStatusCode();
+			if (statusCode != HttpStatus.SC_OK) { 
+				Log.w("HelperMethods.retrieveStream", 
+						"Error " + statusCode + " for URL " + url); 
+				return null;
+			}
+
+			return getResponse.getEntity().getContent();
+
+		} 
+		catch (IOException e) {
+			getRequest.abort();
+			Log.w("HelperMethods.retrieveStream", "Error for URL " + url, e);
+		}
+
+		return null;
+	}
 
 	public static InputStream getStream(String url) {
 		DefaultHttpClient client = new DefaultHttpClient(); 
@@ -139,7 +170,6 @@ public class HelperMethods {
 		}
 
 		return null;
-
 	}
 
 	public static String postData(String url, List<NameValuePair> nameValuePairs) throws Exception {
@@ -178,20 +208,11 @@ public class HelperMethods {
 		}
 		in.close();
 		html = str.toString();
-		String s = "!-- Content --";
-		String s2 = "!-- Scripts --";
-		String s3 = "!-- Footer and Content Info --";
-		String s4 = "!-- End #rdb-footer --";
-		//html = html.substring(html.indexOf(s) + s.length() + 1);
-		//html = html.substring(0, html.indexOf(s2) - s2.length() - 1);
-		//String topPart = html.substring(0, html.indexOf(s3) - s3.length() - 1);
-		//String bottomPart = html.substring(html.indexOf(s4) + s4.length() + 1);
-		String fullHtml = html; //topPart + bottomPart;
+		String fullHtml = html; 
 		
-		fullHtml = fullHtml.replace("/learn-more", "http://www.readability.com/learn-more");
-		fullHtml = "<head><link rel=\"stylesheet\" href=\"file:///android_asset/mobile2.css\" type=\"text/css\" media=\"all\" charset=\"utf-8\"" + fullHtml;
+		//fullHtml = "<head><link rel=\"stylesheet\" href=\"file:///android_asset/mobile2.css\" type=\"text/css\" media=\"all\" charset=\"utf-8\"" + fullHtml;
 		fullHtml = fullHtml + "<script type=\"text/javascript\" src=\"file:///android_asset/jquery.min.js\"></script>";
-		html = html.replaceAll("/media/css/mobile2.css", "file:///android_asset/mobile2.css");
+		fullHtml = fullHtml.replaceAll("/media/css/mobile.min.css", "file:///android_asset/mobile.css");
 		//html = html.replaceAll("//ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js", "file:///android_asset/jquery.min.js");
 		html = html.replace("</script>", "</script>\n <script type=\"text/javascript\" src=\"file:///android_asset/jquery.min.js\"></script>\n");
 		//c = c.replaceAll("<a href=\"#\" class=\"article-back-link\">", "<a href=\"##\" class=\"article-back-link\">");
