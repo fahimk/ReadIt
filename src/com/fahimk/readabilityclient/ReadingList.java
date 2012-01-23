@@ -3,7 +3,6 @@ package com.fahimk.readabilityclient;
 import static com.fahimk.readabilityclient.ArticlesSQLiteOpenHelper.*;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import android.app.TabActivity;
 import android.content.Context;
@@ -15,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TextView;

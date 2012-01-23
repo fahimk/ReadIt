@@ -1,7 +1,5 @@
 package com.fahimk.readabilityclient;
 
-import static com.fahimk.readabilityclient.HelperMethods.PREF_NAME;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
