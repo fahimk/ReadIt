@@ -77,8 +77,9 @@ public final class R {
         public static final int listitem_title=0x7f080004;
         public static final int mainFrame=0x7f080019;
         public static final int menu_archive=0x7f080027;
+        public static final int menu_delete=0x7f08002a;
         public static final int menu_favorite=0x7f080026;
-        public static final int menu_readlater=0x7f08002a;
+        public static final int menu_readlater=0x7f08002b;
         public static final int menu_share=0x7f080029;
         public static final int menu_styles=0x7f080028;
         public static final int popup_window=0x7f08001b;
@@ -101,7 +102,8 @@ public final class R {
     }
     public static final class menu {
         public static final int menu_authorized=0x7f070000;
-        public static final int menu_guest=0x7f070001;
+        public static final int menu_clear=0x7f070001;
+        public static final int menu_guest=0x7f070002;
     }
     public static final class string {
         public static final int app_name=0x7f050000;

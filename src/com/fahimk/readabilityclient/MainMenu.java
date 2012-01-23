@@ -93,6 +93,7 @@ import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.fahimk.jsonobjects.Bookmark;
+import com.fahimk.jsonobjects.RDD;
 import com.fahimk.jsonobjects.SearchBookmarks;
 import com.google.gson.Gson;
 
@@ -528,6 +529,7 @@ public class MainMenu extends Activity {
 		String fullUrl = "";
 		@Override
 		protected void onPostExecute(String url) {
+			Log.e("line", url);
 			if(progress.isShowing()) {
 				progress.dismiss();
 			}
@@ -554,49 +556,17 @@ public class MainMenu extends Activity {
 			String url = urls[0];
 			fullUrl = url;
 			try {
-				DefaultHttpClient mHttpClient = new DefaultHttpClient();
-				BasicHttpContext mHttpContext = new BasicHttpContext();
-				CookieStore mCookieStore      = new BasicCookieStore();        
-				mHttpContext.setAttribute(ClientContext.COOKIE_STORE, mCookieStore);
-
-				HttpGet httpget = new HttpGet("http://www.readability.com/shorten");
-
-				HttpResponse response;
-				response = mHttpClient.execute(httpget, mHttpContext);
-
-				HttpPost httpost = new HttpPost("http://www.readability.com/~/");
 
 				List <NameValuePair> nvps = new ArrayList <NameValuePair>();
 				nvps.add(new BasicNameValuePair("url", url));
+				
+				InputStream bookmarksSource = HelperMethods.postStream("https://readability.com/api/shortener/v1/urls", nvps);
 
-				httpost.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
-				httpost.setHeader("Keep-Alive", "115");
-				httpost.setHeader("Connection", "keep-alive");
-				httpost.setHeader("Referer", "http://www.readability.com/shorten");
-				httpost.setHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:2.0.1) Gecko/20100101 Firefox/4.0.1");
-				httpost.setHeader("X-Requested-With", "XMLHttpRequest");
-				List<Cookie> cl = mCookieStore.getCookies();
-				StringBuffer com = new StringBuffer();
-				for(Cookie c: cl) {
-					com.append(c.getName());
-					com.append("=");
-					com.append(c.getValue());
-					com.append(";");
-				}
-				httpost.setHeader("Cookie", com.toString());
-				response = mHttpClient.execute(httpost, mHttpContext);
-
-				InputStream i = response.getEntity().getContent();
-				BufferedReader reader = new BufferedReader(new InputStreamReader(i));
-				String line = reader.readLine();
-				String articlesObject = "/articles/";
-				int begin = line.indexOf("/articles/");
-				int end = line.indexOf("\"", begin);
-				return line.substring(begin+articlesObject.length(), end);
-			}
-			catch (IOException e) {
-				e.printStackTrace();
-				return connectionError;
+				//Log.e("bookmarksSource", bookmarksSource.toString() + "abc");
+				Gson bookmarkGson = new Gson();
+				Reader bookmarkReader = new InputStreamReader(bookmarksSource);
+				RDD rdd = bookmarkGson.fromJson(bookmarkReader, RDD.class);
+				return rdd.meta.rdd_url;
 			}
 			catch (Exception e) {
 				e.printStackTrace();
@@ -693,6 +663,7 @@ public class MainMenu extends Activity {
 				else if(!bm.archive) {
 					try {
 						String html = parseHTML("http://readability.com/mobile/articles/"+bm.article.id);
+						Log.e("url: ", "http://readability.com/mobile/articles/"+bm.article.id);
 						values.put(ARTICLE_CONTENT, html);
 						database.insert(ARTICLE_TABLE, null, values);
 						Log.e("inserted", bm.article.title );

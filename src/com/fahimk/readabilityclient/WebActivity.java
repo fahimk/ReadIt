@@ -373,7 +373,7 @@ public class WebActivity extends Activity {
 		}.start();
 
 	}
-	
+
 	private void toggleFavorite() {
 		favorite = (favorite.equals("0")) ? "1" : "0";
 		WebSyncArticles task = new WebSyncArticles();
@@ -549,7 +549,7 @@ public class WebActivity extends Activity {
 					"var readBar = document.getElementById('read-bar'); readBar.parentNode.removeChild(readBar);"+
 					"var footNote = document.getElementById('article-marketing'); footNote.parentNode.removeChild(footNote);"+
 					"var bottom = document.getElementById('article-nav'); bottom.parentNode.removeChild(bottom);" +
-			"})()");  
+					"})()");  
 			view.loadUrl("javascript:(function() {" +
 					"$(document).ready(function() {" +
 					"$('body').scrollTop($('body').outerHeight() * " + read_percent + " )" +
@@ -603,11 +603,11 @@ public class WebActivity extends Activity {
 					bookmarkCancelMessage.show();
 					break;
 				}
-				case MSG_WV_READ_PERCENT:
-					new WebSyncArticles().execute();
-					Toast message4 = Toast.makeText(WebActivity.this, "Read position saved", Toast.LENGTH_LONG);
-					message4.show();
-					break;
+			case MSG_WV_READ_PERCENT:
+				new WebSyncArticles().execute();
+				Toast message4 = Toast.makeText(WebActivity.this, "Read position saved", Toast.LENGTH_LONG);
+				message4.show();
+				break;
 			case MSG_FAIL:
 				if(pDialog.isShowing())
 					pDialog.dismiss();
