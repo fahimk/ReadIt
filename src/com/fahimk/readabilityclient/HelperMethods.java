@@ -182,11 +182,11 @@ public class HelperMethods {
 		String s2 = "!-- Scripts --";
 		String s3 = "!-- Footer and Content Info --";
 		String s4 = "!-- End #rdb-footer --";
-		html = html.substring(html.indexOf(s) + s.length() + 1);
-		html = html.substring(0, html.indexOf(s2) - s2.length() - 1);
-		String topPart = html.substring(0, html.indexOf(s3) - s3.length() - 1);
-		String bottomPart = html.substring(html.indexOf(s4) + s4.length() + 1);
-		String fullHtml = topPart + bottomPart;
+		//html = html.substring(html.indexOf(s) + s.length() + 1);
+		//html = html.substring(0, html.indexOf(s2) - s2.length() - 1);
+		//String topPart = html.substring(0, html.indexOf(s3) - s3.length() - 1);
+		//String bottomPart = html.substring(html.indexOf(s4) + s4.length() + 1);
+		String fullHtml = html; //topPart + bottomPart;
 		
 		fullHtml = fullHtml.replace("/learn-more", "http://www.readability.com/learn-more");
 		fullHtml = "<head><link rel=\"stylesheet\" href=\"file:///android_asset/mobile2.css\" type=\"text/css\" media=\"all\" charset=\"utf-8\"" + fullHtml;
