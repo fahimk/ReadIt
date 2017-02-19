@@ -1,7 +1,6 @@
 package com.fahimk.readabilityclient;
 
-import static com.fahimk.readabilityclient.HelperMethods.PREF_NAME;
-import static com.fahimk.readabilityclient.HelperMethods.zeroUpdate;
+import static com.fahimk.readabilityclient.HelperMethods.*;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;

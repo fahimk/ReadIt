@@ -1,12 +1,6 @@
 package com.fahimk.readabilityclient;
 
-import static com.fahimk.readabilityclient.HelperMethods.API_SECRET;
-import static com.fahimk.readabilityclient.HelperMethods.OAUTH_ACCESS;
-import static com.fahimk.readabilityclient.HelperMethods.OAUTH_AUTHORIZE;
-import static com.fahimk.readabilityclient.HelperMethods.OAUTH_REQUEST;
-import static com.fahimk.readabilityclient.HelperMethods.PREF_NAME;
-import static com.fahimk.readabilityclient.HelperMethods.URL_CALLBACK;
-import static com.fahimk.readabilityclient.HelperMethods.requestApiUrl;
+import static com.fahimk.readabilityclient.HelperMethods.*;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -15,7 +9,6 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.CookieStore;
